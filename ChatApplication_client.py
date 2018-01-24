@@ -22,6 +22,7 @@ free = True
 kick = False
 grant = 1 # 0 = Superuser ; 1 = Normaluser
 connected = False #We must control if the conecction is on for exiting the thread if neccesary
+buffer_size = 12800
 
 def send_message(sock, server_ip):
     try:
@@ -33,6 +34,11 @@ def send_message(sock, server_ip):
         connected = False
         exit(1)
 
+def receive_message(sock, server_ip):
+    while 1:
+        message = sock.recv(buffer_size)
+        print message
+        stdout.flush()
 
 def main(argv):
     server_ip = argv[1]
@@ -48,8 +54,8 @@ def main(argv):
     sending_t = Thread(target=send_message, args=(sock, server_ip))
     sending_t.start()
     #Thread for Receiving
-    ##receiving_t = Thread(target=receive_message, args=(sock, server_ip))
-    ##receiving_t.start()
+    receiving_t = Thread(target=receive_message, args=(sock, server_ip))
+    receiving_t.start()
 
     try:
         while True:

@@ -30,29 +30,31 @@ expired_connections = {}
 
 def connect_client(client_sock, client_ip_and_port):
     client_sock.sendall('Connecting...\n')
-    print 'A client is trying to connect...\n'
+    print 'A client [{}] is trying to connect...\n'.format(client_ip_and_port)
     client_ip = client_ip_and_port[0]
     client_port = client_ip_and_port[1]
 
-    if (not kick_connections.has_key(client_ip)):
-        kick_connections[client_ip] = []
+    # if (not kick_connections.has_key(client_ip)):
+    #     kick_connections[client_ip] = []
 
-    try:
-        while 1:
-            credential_response = ask_credentials(client_sock)
+    ask_credentials(client_sock)
 
-            logging.info("User Login Info = {}".format(credential_response))
-
-            if (credential_response[0] == 'created'):
-                print 'USER with IP:%(client_ip) and USER:%(credential_response[2])  has join the room for the first time\n'
-
-            elif (credential_response[0] == 'logged'):
-                print 'USER with IP has join the room\n'
-
-            else:
-                client_sock.sendall('Login failed too many times. Please try again\n')
-    except:
-        client_exit(client_sock, client_ip, client_port)
+    # try:
+    #     while 1:
+    #         credential_response = ask_credentials(client_sock)
+    #
+    #         logging.info("User Login Info = {}".format(credential_response))
+    #
+    #         if (credential_response[0] == 'created'):
+    #             print 'USER with IP:%(client_ip) and USER:%(credential_response[2])  has join the room for the first time\n'
+    #
+    #         elif (credential_response[0] == 'logged'):
+    #             print 'USER with IP has join the room\n'
+    #
+    #         else:
+    #             client_sock.sendall('Login failed too many times. Please try again\n')
+    # except:
+    #     client_exit(client_sock, client_ip, client_port)
 
 def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in parameters for a timer
     client_sock.sendall('Do you want to create a new user? [y/n]\n')
@@ -105,10 +107,10 @@ def login_user(client_sock):
 
     #TODO
     database_doc = open('database/', 'r').read().split('\n')[6].split(';')
-    if ((user_name == "admin") OR (user_name not in database_doc)):
+    if ((user_name == "admin") or (user_name in database_doc)):
         if (user_password in database_doc):
             return (True, user_login)
-    else
+    else:
         return (False, user_login)
 
 
@@ -145,6 +147,6 @@ def main(argv):
 
     except (KeyboardInterrupt, SystemExit):
         stdout.flush()
-        print "\nSever down\n"
+        print "\nSever down ==================\n"
 
 main(argv)
