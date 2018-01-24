@@ -46,7 +46,7 @@ def connect_client(client_sock, client_ip_and_port):
             logging.info("User Login Info = {}".format(credential_response))
 
             if (credential_response[0] == 'created'):
-                print 'USER with IP:%(client_ip) and USER:%(credential_response[2])  has join the room for the first time\n'
+                print 'USER with IP:%s and USER:%s  has join the room for the first time\n' %(client_ip, credential_response[2])
 
             elif (credential_response[0] == 'logged'):
                 print 'USER with IP has join the room\n'
@@ -73,7 +73,6 @@ def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in paramete
         ask_credentials(client_sock, client_ip, client_port)
 
 def create_user(client_sock):
-
     client_sock.sendall('>(1/3) Write your user name:')
     user_name = client_sock.recv(buffer_size)
     client_sock.sendall('>(2/3) Write your password:')
@@ -96,8 +95,8 @@ def create_user(client_sock):
             with open('database/users_credentials.txt', 'a') as aDoc:
                 aDoc.write('\n' + user_name + ';' + user_password) #TODO encrypt password
 
-            client_sock.sendall('{} has been welcome.\n').format('user_name')
-            print '{} Has join the party.\n'.format('user_name')
+            client_sock.sendall('%s has been welcome.\n'  %user_name)
+            print '%s Has join the party.\n' %user_name
             return (True, user_name)
 
         else:
