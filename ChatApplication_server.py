@@ -39,34 +39,34 @@ def connect_client(client_sock, client_ip_and_port):
 
     ask_credentials(client_sock)
 
-    # try:
-    #     while 1:
-    #         credential_response = ask_credentials(client_sock)
-    #
-    #         logging.info("User Login Info = {}".format(credential_response))
-    #
-    #         if (credential_response[0] == 'created'):
-    #             print 'USER with IP:%(client_ip) and USER:%(credential_response[2])  has join the room for the first time\n'
-    #
-    #         elif (credential_response[0] == 'logged'):
-    #             print 'USER with IP has join the room\n'
-    #
-    #         else:
-    #             client_sock.sendall('Login failed too many times. Please try again\n')
-    # except:
-    #     client_exit(client_sock, client_ip, client_port)
+    try:
+        while 1:
+            credential_response = ask_credentials(client_sock)
+
+            logging.info("User Login Info = {}".format(credential_response))
+
+            if (credential_response[0] == 'created'):
+                print 'USER with IP:%(client_ip) and USER:%(credential_response[2])  has join the room for the first time\n'
+
+            elif (credential_response[0] == 'logged'):
+                print 'USER with IP has join the room\n'
+
+            else:
+                client_sock.sendall('Login failed too many times. Please try again\n')
+    except:
+        client_exit(client_sock, client_ip, client_port)
 
 def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in parameters for a timer
     client_sock.sendall('Do you want to create a new user? [y/n]\n')
     response = client_sock.recv(buffer_size)
 
-    if (response == "y"):
+    if (response == 'y'):
         #YES
-        return (created, create_user(client_sock) )
+        return ('created', create_user(client_sock) )
 
-    elif (response =="n"):
+    elif (response == 'n'):
         #NO
-        return (logged, login_user(client_sock))
+        return ('logged', login_user(client_sock))
     else:
         #Default
         client_sock.sendall('Error, you must respond with "y" saying yes or "n" saying no.\n')
@@ -74,21 +74,30 @@ def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in paramete
 
 def create_user(client_sock):
 
-    client_sock.sendall('write your user name:\n')
+    client_sock.sendall('>(1/3) Write your user name:')
     user_name = client_sock.recv(buffer_size)
-    client_sock.sendall('write your password:\n')
+    client_sock.sendall('>(2/3) Write your password:')
     user_password = client_sock.recv(buffer_size)
-    client_sock.sendall('write your password:\n')
+    client_sock.sendall('>(3/3) Write your password:')
     user_password_2 = client_sock.recv(buffer_size)
 
-    database_doc = open('database/', 'r').read().split('\n')[6].split(';')
+    # with open('database/users_credentials.txt', 'r') as rDoc:
+    #     database_doc = rDoc.read().split('\n').split(';') # USERNAME;PASSWORD\n
+
+    with open('database/users_credentials.txt', 'r') as rDoc:
+        data = rDoc.readlines()
+
+        for line in data:
+            words = line.split('\n') #.split(';')
+        print words
+
     if (not(user_name == "admin") or not(user_name in database_doc)):
         if (user_password == user_password_2):
-            with open('/database/users_credentials.txt', 'a') as aFile:
-                aFile.write('\n' + new_user + ' ' + new_pass) #TODO encrypt password
+            with open('database/users_credentials.txt', 'a') as aDoc:
+                aDoc.write('\n' + user_name + ';' + user_password) #TODO encrypt password
 
-            client_sock.sendall('%(user_name) have been welcome.\n')
-            print '%(user_name) Has join the party.\n'
+            client_sock.sendall('{} has been welcome.\n').format('user_name')
+            print '{} Has join the party.\n'.format('user_name')
             return (True, user_name)
 
         else:
@@ -129,7 +138,7 @@ def main(argv):
     sock.bind((host, server_port))
     sock.listen(n_conection)
 
-    print 'Server on port ' + str(server_port) + '\n'
+    print 'Server on port ' + str(server_port)
     logging.info("Server on port {}".format(server_port))
 
     stdout.flush()

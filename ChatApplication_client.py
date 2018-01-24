@@ -21,13 +21,13 @@ logging.basicConfig(level=logging.INFO, filename='log/ChatApplication_client.log
 free = True
 kick = False
 grant = 1 # 0 = Superuser ; 1 = Normaluser
-connected = False #We must control if the conecction is on for exiting the thread if neccesary
+connected = False # We must control if the conecction is on for exiting the thread if neccesary
 buffer_size = 12800
 
 def send_message(sock, server_ip):
     try:
         while 1:
-            message = input()
+            message = raw_input()
             sock.sendall(message)
     except:
         # ^C Control
@@ -35,10 +35,15 @@ def send_message(sock, server_ip):
         exit(1)
 
 def receive_message(sock, server_ip):
-    while 1:
-        message = sock.recv(buffer_size)
-        print message
-        stdout.flush()
+    try:
+        while 1:
+            message = sock.recv(buffer_size)
+            print message
+            stdout.flush()
+    except:
+        # ^C Control
+        connected = False
+        exit(1)
 
 def main(argv):
     server_ip = argv[1]
@@ -60,10 +65,10 @@ def main(argv):
     try:
         while True:
             if (not connected):
-                exit(1)                                         #Exit on Keyboard Interrupt
+                exit(1) #Exit on Keyboard Interrupt
     except (KeyboardInterrupt, SystemExit):
         stdout.flush()
-        print '\nConnection to server closed'                  #Close server
+        print '\nConnection to server closed' #Close server
         logging.info("Connection to server closed")
 
 
