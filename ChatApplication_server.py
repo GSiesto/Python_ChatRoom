@@ -28,79 +28,89 @@ logged_connections = {} # User connected
 kick_connections = {} # Users that has been kicked
 expired_connections = {}
 
-# Connection with the client
 def connect_client(client_sock, client_ip_and_port):
-    client_sock.sendall('Connected...\n')
+    client_sock.sendall('Connecting...\n')
+    print 'A client is trying to connect...\n'
     client_ip = client_ip_and_port[0]
     client_port = client_ip_and_port[1]
 
-    # if (not kick_connections.has_key(client_ip)):
-    #     kick_connections[client_ip] = []
-
-    #create_user(client_sock)
+    if (not kick_connections.has_key(client_ip)):
+        kick_connections[client_ip] = []
 
     try:
         while 1:
-            #user_login = prompt_login(client_sock, client_ip, client_port)
+            credential_response = ask_credentials(client_sock)
 
-            #logging.info("User Login Info = {}".format(user_login))
+            logging.info("User Login Info = {}".format(credential_response))
 
-            #if (user_login[0]):
-                #print 'USER with IP has join the room\n'
+            if (credential_response[0] == 'created'):
+                print 'USER with IP:%(client_ip) and USER:%(credential_response[2])  has join the room for the first time\n'
 
-            #else:
+            elif (credential_response[0] == 'logged'):
+                print 'USER with IP has join the room\n'
 
+            else:
                 client_sock.sendall('Login failed too many times. Please try again\n')
-
     except:
         client_exit(client_sock, client_ip, client_port)
 
-#Create a user if it doesn't exist
-def create_user(client_sock):
+def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in parameters for a timer
     client_sock.sendall('Do you want to create a new user? [y/n]\n')
     response = client_sock.recv(buffer_size)
-    login(client_sock)
-    # if (response == "y"):
-    #         #Register
-    #         client_sock.sendall('write your user name:\n')
-    #         user_name = client_sock.recv(buffer_size)
-    #         client_sock.sendall('write your password:\n')
-    #         user_password = client_sock.recv(buffer_size)
-    #         client_sock.sendall('write your password:\n')
-    #         user_password_2 = client_sock.recv(buffer_size)
-    #
-    #         database_doc = open('database/', 'r').read().split('\n')[6].split(';')
-    #         if ((user_name == "admin") or (user_name in database_doc)):
-    #         #TODO NO EXISTE EN LA LISTA DE USUARIOS
-    #             if (user_password == user_password_2):
-    #                 with open('/database/users_credentials.txt', 'a') as aFile:
-    #                     aFile.write('\n' + new_user + ' ' + new_pass) #TODO encrypt password
-    #
-    #                 client_sock.sendall('%(user_name) Has join the party.\n')
-    #             else:
-    #                 client_sock.sendall('The password are not the same, please try again\n')
-    #                 create_user(client_sock)
-    #         else:
-    #             client_sock.sendall('You must choose another username\n')
-    #             create_user(client_sock)
-    #
-    # elif (response =="n"): #no
-    #         #Login
-    # login(client_sock)
-    #
-    # else:
-    #     #Default
-    #     client_sock.sendall('Error, you must respond with "y" saying yes or "n" saying no.\n')
-    #     create_user(client_sock)
 
+    if (response == "y"):
+        #YES
+        return (created, create_user(client_sock) )
 
-def login(client_sock):
+    elif (response =="n"):
+        #NO
+        return (logged, login_user(client_sock))
+    else:
+        #Default
+        client_sock.sendall('Error, you must respond with "y" saying yes or "n" saying no.\n')
+        ask_credentials(client_sock, client_ip, client_port)
+
+def create_user(client_sock):
+
+    client_sock.sendall('write your user name:\n')
+    user_name = client_sock.recv(buffer_size)
+    client_sock.sendall('write your password:\n')
+    user_password = client_sock.recv(buffer_size)
+    client_sock.sendall('write your password:\n')
+    user_password_2 = client_sock.recv(buffer_size)
+
+    database_doc = open('database/', 'r').read().split('\n')[6].split(';')
+    if (not(user_name == "admin") or not(user_name in database_doc)):
+        if (user_password == user_password_2):
+            with open('/database/users_credentials.txt', 'a') as aFile:
+                aFile.write('\n' + new_user + ' ' + new_pass) #TODO encrypt password
+
+            client_sock.sendall('%(user_name) have been welcome.\n')
+            print '%(user_name) Has join the party.\n'
+            return (True, user_name)
+
+        else:
+            client_sock.sendall('The password are not the same, please try again\n')
+            create_user(client_sock)
+    else:
+        client_sock.sendall('You must choose another username\n')
+        ask_credentials(client_sock)
+        return (False, user_name)
+
+def login_user(client_sock):
     client_sock.sendall('write your user name:\n')
     user_name = client_sock.recv(buffer_size)
     client_sock.sendall('write your password:\n')
     user_password = client_sock.recv(buffer_size)
 
-    #Search in the list the password
+    #TODO
+    database_doc = open('database/', 'r').read().split('\n')[6].split(';')
+    if ((user_name == "admin") OR (user_name not in database_doc)):
+        if (user_password in database_doc):
+            return (True, user_login)
+    else
+        return (False, user_login)
+
 
 def client_exit(client, client_ip, client_port):
     #TODO
