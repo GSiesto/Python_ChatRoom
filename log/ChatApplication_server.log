@@ -86,3 +86,14 @@
 [INFO] 2018-01-24 18:38:39,758 Chat Client Connected on IP 127.0.0.1 & Port 9797
 [INFO] 2018-01-24 18:40:57,130 Server on port 9797
 [INFO] 2018-01-24 18:40:59,774 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-01-25 13:01:50,805 Server on port 9797
+[INFO] 2018-01-25 13:01:59,612 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-01-25 13:04:22,744 Server on port 9797
+[INFO] 2018-01-25 13:04:25,011 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-01-25 13:04:32,207 User Login Info = ('created', (True, 'pipi'))
+[INFO] 2018-01-25 13:12:31,751 Server on port 9797
+[INFO] 2018-01-25 13:12:33,241 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-01-25 13:12:39,029 User Login Info = ('y', (True, 'iuiu'))
+[INFO] 2018-01-25 13:13:31,578 Server on port 9797
+[INFO] 2018-01-25 13:13:33,802 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-01-25 13:13:38,449 User Login Info = ('y', (True, 'trtr'))

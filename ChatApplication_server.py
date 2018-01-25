@@ -37,20 +37,24 @@ def connect_client(client_sock, client_ip_and_port):
     # if (not kick_connections.has_key(client_ip)):
     #     kick_connections[client_ip] = []
 
-    ask_credentials(client_sock)
+    #ask_credentials(client_sock)
+    credential_response = ask_credentials(client_sock)
 
     try:
         while 1:
-            credential_response = ask_credentials(client_sock)
 
             logging.info("User Login Info = {}".format(credential_response))
+            print format(credential_response)
 
-            if (credential_response[0] == 'created'):
+            if (credential_response[0] == 'y'):
+                client_sock.sendall('You have entered the room\n')
                 print 'USER with IP:%s and USER:%s  has join the room for the first time\n' %(client_ip, credential_response[2])
+                
+                #TODO def of normal_mensaje // Más tarde será el modulo que comprueba si es comando o no, y por defecto llevará a mensaje
 
-            elif (credential_response[0] == 'logged'):
+            elif (credential_response[0] == 'n'):
+                client_sock.sendall('You have entered the room again\n')
                 print 'USER with IP has join the room\n'
-
             else:
                 client_sock.sendall('Login failed too many times. Please try again\n')
     except:
@@ -62,11 +66,11 @@ def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in paramete
 
     if (response == 'y'):
         #YES
-        return ('created', create_user(client_sock) )
+        return ('y', create_user(client_sock) )
 
     elif (response == 'n'):
         #NO
-        return ('logged', login_user(client_sock))
+        return ('n', login_user(client_sock))
     else:
         #Default
         client_sock.sendall('Error, you must respond with "y" saying yes or "n" saying no.\n')
@@ -79,9 +83,6 @@ def create_user(client_sock):
     user_password = client_sock.recv(buffer_size)
     client_sock.sendall('>(3/3) Write your password:')
     user_password_2 = client_sock.recv(buffer_size)
-
-    # with open('database/users_credentials.txt', 'r') as rDoc:
-    #     database_doc = rDoc.read().split('\n').split(';') # USERNAME;PASSWORD\n
 
     with open('database/users_credentials.txt', 'r') as rDoc:
         data = rDoc.readlines()
@@ -101,7 +102,7 @@ def create_user(client_sock):
 
         else:
             client_sock.sendall('The password are not the same, please try again\n')
-            create_user(client_sock)
+            ask_credentials(client_sock)
     else:
         client_sock.sendall('You must choose another username\n')
         ask_credentials(client_sock)
