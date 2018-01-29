@@ -40,25 +40,39 @@ def connect_client(client_sock, client_ip_and_port):
     #ask_credentials(client_sock)
     credential_response = ask_credentials(client_sock)
 
-    try:
-        while 1:
+    logging.info("User Login Info = {}".format(credential_response))
+    print format(credential_response)
 
-            logging.info("User Login Info = {}".format(credential_response))
-            print format(credential_response)
+    if (credential_response[0] == 'y'):
+        print 'AAAAAA'
+        print 'USER with IP:%s and USER:  has join the room for the first time\n' %(client_ip)#, credential_response[1[1]])
+        client_sock.sendall('You have entered the room\n')
 
-            if (credential_response[0] == 'y'):
-                client_sock.sendall('You have entered the room\n')
-                print 'USER with IP:%s and USER:%s  has join the room for the first time\n' %(client_ip, credential_response[2])
-                
-                #TODO def of normal_mensaje // Más tarde será el modulo que comprueba si es comando o no, y por defecto llevará a mensaje
+        #TODO def of normal_mensaje Mas tarde sera el modulo que comprueba si es comando o no, y por defecto llevara a mensaje
+        try:
+            while 1:
+                message = client_sock.recv(buffer_size)
+                print (message)
+        except:
+            logout(client_sock)
+            client_exit(client_sock, client_ip, client_port)
 
-            elif (credential_response[0] == 'n'):
-                client_sock.sendall('You have entered the room again\n')
-                print 'USER with IP has join the room\n'
-            else:
-                client_sock.sendall('Login failed too many times. Please try again\n')
-    except:
-        client_exit(client_sock, client_ip, client_port)
+    elif (credential_response[0] == 'n'):
+        print 'USER with IP has join the room\n'
+        client_sock.sendall('Welcome back %s \n' %credential_response[1[1]]) #TODO comprobar
+        try:
+            while 1:
+                message = client_sock.recv(buffer_size)
+                print (message)
+        except:
+            client_exit(client_sock, client_ip, client_port)
+
+    else:
+        print 'OOOOOOO'
+        print 'USER with IP:%s and USER:  has problems trying to connect. Please try again\n' %(client_ip)
+        client_sock.sendall('Login failed too many times. Please try again\n')
+        ask_credentials(client_sock)
+
 
 def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in parameters for a timer
     client_sock.sendall('Do you want to create a new user? [y/n]\n')
@@ -74,7 +88,7 @@ def ask_credentials(client_sock): #TODO ADD (client_ip, client_port) in paramete
     else:
         #Default
         client_sock.sendall('Error, you must respond with "y" saying yes or "n" saying no.\n')
-        ask_credentials(client_sock, client_ip, client_port)
+        ask_credentials(client_sock)
 
 def create_user(client_sock):
     client_sock.sendall('>(1/3) Write your user name:')
@@ -83,6 +97,8 @@ def create_user(client_sock):
     user_password = client_sock.recv(buffer_size)
     client_sock.sendall('>(3/3) Write your password:')
     user_password_2 = client_sock.recv(buffer_size)
+
+    retorno = (False, user_name)
 
     with open('database/users_credentials.txt', 'r') as rDoc:
         data = rDoc.readlines()
@@ -96,17 +112,19 @@ def create_user(client_sock):
             with open('database/users_credentials.txt', 'a') as aDoc:
                 aDoc.write('\n' + user_name + ';' + user_password) #TODO encrypt password
 
-            client_sock.sendall('%s has been welcome.\n'  %user_name)
             print '%s Has join the party.\n' %user_name
-            return (True, user_name)
-
+            client_sock.sendall('You has been welcome.\n')
+            retorno = (True, user_name)
         else:
             client_sock.sendall('The password are not the same, please try again\n')
+            retorno = (False, user_name)
             ask_credentials(client_sock)
     else:
         client_sock.sendall('You must choose another username\n')
+        retorno = (False, user_name)
         ask_credentials(client_sock)
-        return (False, user_name)
+    rDoc.close() #Close document
+    return retorno
 
 def login_user(client_sock):
     client_sock.sendall('write your user name:\n')
@@ -123,11 +141,14 @@ def login_user(client_sock):
         return (False, user_login)
 
 
-def client_exit(client, client_ip, client_port):
-    #TODO
+def clietn_logout(client_sock):
+    client_sock.sendall("You has been disconnected by the server")
+    client_sock.close()
+
+def client_exit(client_sock, client_ip, client_port):
     print 'Client on %s : %s disconnected' %(client_ip, client_port)
     stdout.flush()
-    client.close()
+    client_sock.close()
 
 # Main
 def main(argv):
@@ -141,14 +162,15 @@ def main(argv):
     print 'Server on port ' + str(server_port)
     logging.info("Server on port {}".format(server_port))
 
-    stdout.flush()
+    stdout.flush() # Clean
 
     try:
         while 1:
             client_connection, addr = sock.accept()
             print 'Client connected on '  + str(addr[0]) + ':' + str(addr[1]) +'\n'
             logging.info("Chat Client Connected on IP {} & Port {}".format(host, server_port))
-            stdout.flush()
+
+            stdout.flush() # Clean
 
             #THREADIND
             server_t = Thread(target=connect_client, args=(client_connection, addr))
@@ -157,5 +179,6 @@ def main(argv):
     except (KeyboardInterrupt, SystemExit):
         stdout.flush()
         print "\nSever down ==================\n"
+        exit(1) #TODO comprobar
 
 main(argv)

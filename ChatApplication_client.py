@@ -39,7 +39,7 @@ def receive_message(sock, server_ip):
         while 1:
             message = sock.recv(buffer_size)
             print message
-            stdout.flush()
+            stdout.flush() # Clean
     except:
         # ^C Control
         connected = False
