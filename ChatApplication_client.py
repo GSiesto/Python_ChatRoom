@@ -11,7 +11,7 @@
 import logging # Generate a log file to record all the changes made
 from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv, stdout
-import os
+import os # For exiting of every thread
 from threading import Thread #Threading
 
 # Config
@@ -31,8 +31,10 @@ def send_message(sock, server_ip):
             sock.sendall(message)
     except:
         # ^C Control
+        stdout.flush()
+        sock.close()
         connected = False
-        exit(1)
+        os._exit(1)
 
 def receive_message(sock, server_ip):
     try:
@@ -42,8 +44,10 @@ def receive_message(sock, server_ip):
             stdout.flush() # Clean
     except:
         # ^C Control
+        stdout.flush()
+        sock.close()
         connected = False
-        exit(1)
+        os._exit(1)
 
 def main(argv):
     server_ip = argv[1]
@@ -53,7 +57,7 @@ def main(argv):
     sock.connect((server_ip, server_port))
     connected = True
 
-    #==============
+    #============== 2 Active Threads
     #THREADIND
     #Thread for Sendind
     sending_t = Thread(target=send_message, args=(sock, server_ip))
@@ -65,11 +69,13 @@ def main(argv):
     try:
         while True:
             if (not connected):
-                exit(1) #Exit on Keyboard Interrupt
+                os._exit(1) #Exit on Keyboard Interrupt
     except (KeyboardInterrupt, SystemExit):
         stdout.flush()
+        sock.close()
         print '\nConnection to server closed' #Close server
         logging.info("Connection to server closed")
+        os._exit(1)
 
 
 main(argv)
