@@ -36,6 +36,8 @@ def send_message(sock, server_ip):
         connected = False
         os._exit(1)
 
+##
+#
 def receive_message(sock, server_ip):
     try:
         while 1:
