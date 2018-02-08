@@ -39,39 +39,53 @@ def send_message(sock, server_ip):
             sock.sendall(message)
     except:
         # ^C Control
-        stdout.flush()
-        sock.close()
-        connected = False
-        os._exit(1)
+        exit(sock)
 
 ##
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
     try:
-        while 1:
+        while (1) and (not kick) and (free):
             message = sock.recv(buffer_size)
-            if (message.startswith('>')):
-                check_command(message)
+            if (message.startswith(">")):
+                check_command(sock, message)
+                stdout.flush() # Clean
             else:
                 print message
                 stdout.flush() # Clean
     except:
         # ^C Control
-        stdout.flush()
-        sock.close()
-        connected = False
-        os._exit(1)
+        exit(sock)
 
-def check_command(message):
-    if (message.startswith('>exit')):
-        exit()
+def check_command(sock, message):
+    if (message.startswith(">exit")):
+        exit(sock)
+    elif (message.startswith(">kick")):
+        kick = True;
+        print "You have been Kicked by an administrator"
+    elif (message.startwith(">busy")):
+        Free = False
+        print "You declared yourself as: Busy"
+    elif (message.startwith(">free")):
+        Free = True
+        print "You declared yourself as: Free"
+    elif (message.startwith(">changegrant")):
+        if (message.startwith(">changegrant 0")):
+            grant = 0
+            print "Grant chages to: SuperUser"
+        elif (message.startwith(">changegrant 1")):
+            grant = 1
+            print "Grant chages to: Normaluser"
+        else:
+            print "ERROR with commands *changegrant* in client side"
     else:
-        print 'ERROR with commands in client side'
+        print "ERROR handling commands in client side"
 
-def exit():
+def exit(sock):
+    sock.sendall(">exit")
     stdout.flush()
     sock.close()
-    print '\nConnection to server closed' #Close server
+    print "Connection to server closed" #Close server
     logging.info("Connection to server closed")
     os._exit(1)
 
@@ -97,9 +111,10 @@ def main(argv):
     try:
         while True:
             if (not connected):
+                exit(sock)
                 os._exit(1) #Exit on Keyboard Interrupt
     except (KeyboardInterrupt, SystemExit):
-        exit()
+        exit(sock)
 
 
 main(argv)
