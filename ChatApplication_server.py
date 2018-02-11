@@ -50,7 +50,7 @@ kick_connections = [] # Kicked users. [[username, grant, socket], ..., [username
 # @exception if the conecction with the socket is interrupted
 def connect_client(client_sock, client_ip_and_port):
     client_sock.sendall('Connecting...\n')
-    print 'A client [{}] is trying to connect...\n'.format(client_ip_and_port)
+    print '] A client [{}] is trying to connect...'.format(client_ip_and_port)
     client_ip = client_ip_and_port[0]
     client_port = client_ip_and_port[1]
 
@@ -66,7 +66,7 @@ def connect_client(client_sock, client_ip_and_port):
 
     if (credential_response[0] == 'y'):
         if (credential_response[1][0] == True):
-            print 'USER:%s with IP:%s has join the room for the first time' %(credential_response[1][1], client_ip)
+            print '] USER:%s with IP:%s has join the room for the first time' %(credential_response[1][1], client_ip)
             client_sock.sendall('<Server>: You have entered the room')
             client_sock.sendall('================== < > ==================')
             # Add to the active user list
@@ -78,7 +78,7 @@ def connect_client(client_sock, client_ip_and_port):
                     message = client_sock.recv(buffer_size)
                     check_message(client_sock, user_name, message)
             except:
-                clients_exit(client_sock)
+                client_logout(client_sock, user_name)
         else:
             client_sock.sendall("<Server>: ERROR 1 -> The username CAN'T exist in the database, try again")
             connect_client(client_sock, client_ip_and_port)
@@ -86,7 +86,7 @@ def connect_client(client_sock, client_ip_and_port):
 
     elif (credential_response[0] == 'n'):
         if (credential_response[1][0] == True):
-            print 'USER:%s with IP:%s has join the room' %(credential_response[1][1], client_ip)
+            print '] USER:%s with IP:%s has join the room' %(credential_response[1][1], client_ip)
             client_sock.sendall('<Server>: Welcome back {} \n'.format(credential_response[1][1]))
             client_sock.sendall('================== < > ==================')
 
@@ -105,20 +105,19 @@ def connect_client(client_sock, client_ip_and_port):
             # Add to the active user list
             user_data = [user_name, grant, client_sock]
             active_connections.append(user_data)
-            print_list(active_connections)
 
             try:
                 while 1:
                     message = client_sock.recv(buffer_size)
                     check_message(client_sock, user_name, message)
             except:
-                clients_exit(client_sock)
+                client_logout(client_sock, user_name)
         else:
             client_sock.sendall("<Server>: ERROR 2 -> The credentials are incorrect")
             connect_client(client_sock, client_ip_and_port)
 
     else:
-        print 'USER:%s with IP:%s has problems trying to connect. Please try again' %(credential_response[1][1], client_ip)
+        print '] USER:%s with IP:%s has problems trying to connect. Please try again' %(credential_response[1][1], client_ip)
         client_sock.sendall('<Server>: You had problems to connect. Please try again')
         connect_client(client_sock, client_ip_and_port)
 
@@ -132,7 +131,7 @@ def connect_client(client_sock, client_ip_and_port):
 #           [1]
 #           [1][0] return of the method call create_user(client_sock)
 #           [1][1] return of the  method call login_user(client_sock)
-def ask_credentials(client_sock): #TODO Add (client_ip, client_port) in parameters for a timer
+def ask_credentials(client_sock):
     try:
         client_sock.sendall('<Server>: Do you want to create a new user? [y/n]')
         response = client_sock.recv(buffer_size)
@@ -146,7 +145,8 @@ def ask_credentials(client_sock): #TODO Add (client_ip, client_port) in paramete
             client_sock.sendall('<Server>: Error, you must respond with "y" saying yes or "n" saying no')
             ask_credentials(client_sock)
     except ():
-        clients_exit(client_sock)
+        print "] Exception while asking credentials"
+        client_sock.close()
 
 
 ##
@@ -177,7 +177,7 @@ def create_user(client_sock):
             with open('database/users_credentials.txt', 'a') as aDoc:
                 aDoc.write('\n' + user_name + ';' + user_password + '#' + format(1)) #TODO encrypt password
 
-            print '%s Has join the party.\n' %user_name
+            print '] %s Has join the party.\n' %user_name
             answer = (True, user_name)
         else:
             client_sock.sendall('<Server>: The password are not the same, please try again')
@@ -245,7 +245,6 @@ def client_logout(client_sock, user_name):
 
 def clients_exit(client_sock):
     stdout.flush()
-    # TODO TODO TODO TODO TODO
     i = 0
     while i < len(active_connections):
         active_connections[i][2].sendall(">exit")
@@ -261,15 +260,22 @@ def clients_exit(client_sock):
 # @param user_name
 # @param message
 def check_message(client_sock, user_name, message):
-    if (message.startswith('/')):
+    if (message.startswith("/")):
+        print "] Checkeado init"
         check_command(client_sock, user_name, message)
+        print "] Checkeado exit"
+    elif (message.startswith(">")):
+        if (message.startswith(">exit")):
+            print "TODO tengo que salir hehee"
+        else:
+            print "PUES NO PASI NADA hihihi"
     else:
         currentDT = datetime.datetime.now()
         # Print in every client screen
         for x in range(len(active_connections)):
             active_connections[x][2].sendall(currentDT.strftime("%I:%M %p | ")+ user_name + ": "+ message)
-
-        print currentDT.strftime("%I:%M %p | ")+ user_name + ": "+ message
+        # Show in server side
+        print currentDT.strftime(" %I:%M %p | ")+ user_name + ": "+ message
 
 ##
 # The message will be check in case on starting with '/' (the command
@@ -278,47 +284,109 @@ def check_message(client_sock, user_name, message):
 #
 # @param message String with the text input
 def check_command(client_sock, user_name, message):
-    if (message.startswith('/viewusers')):
+    if (message.startswith("/viewusers")):
+        print "] %s solicit /viewusers" %user_name
         print_list(active_connections)
-    elif (message.startswith('/messageto')):
-        print e
-    elif (message.startswith('/changepassword')):
-        print e
-    elif (message.startswith('/busy')):
+
+    elif (message.startswith("/messageto")):
+        print "] %s solicit /messageto" %user_name
+        message_to(client_sock, message)
+
+    elif (message.startswith("/changepassword")):
+        print "] %s solicit /changepassword" %user_name
+        print "e changepassword"
+
+    elif (message.startswith("/busy")):
+        print "] %s solicit /busy" %user_name
         client_sock.sendall(">busy")
-    elif (message.startswith('/free')):
+
+    elif (message.startswith("/free")):
+        print "] %s solicit /free" %user_name
         client_sock.sendall(">free")
-    elif (message.startwith('/changegrant')):
+
+    elif (message.startwith("/changegrant")):
+        print "] %s solicit /changegrant" %user_name
         change_grant(client_sock, user_name, message)
-    elif (message.startswith('/kickuser')):
-        kick_user(client_sock, user_name)
-    elif (message.startswith('/viewkickusers')):
+
+    elif (message.startswith("/kickuser")):
+        print "] %s solicit /kickuser" %user_name
+        kick_user(client_sock, message)
+
+    elif (message.startswith("/viewkickusers")):
+        print "] %s solicit /viewkickusers" %user_name
         print_list(kick_connections)
-    elif (message.startswith('/restart')):
-        print e
-    elif (message.startswith('/senddata')):
-        print e
-    elif (message.startswith('/disconnect')):
+
+    elif (message.startswith("/restart")):
+        print "] %s solicit /restart" %user_name
+        print "e restart"
+
+    elif (message.startswith("/senddata")):
+        print "] %s solicit /senddata" %user_name
+        print "e senddata"
+
+    elif (message.startswith("/disconnect")):
+        print "] %s solicit /disconnect" %user_name
         client_logout(client_sock, user_name)
-    elif (message.startswith('/help')):
-        client_sock.sendall("You can type: /viewusers\n/messageto\n/changepassword\n/busy\n/free\n/changegrant\n/kickuser\n/viewkickusers\n/restart\n/senddata\n/disconnect")
+
+    elif (message.startswith("/help")):
+        print "] %s solicit /help" %user_name
+        client_sock.sendall("HOLITAhahaha")
+        #You can type: /viewusers\n/messageto\n/changepassword\n/busy\n/free\n/changegrant\n/kickuser\n/viewkickusers\n/restart\n/senddata\n/disconnect
+
     else:
+        print "] %s solicit couldm't be resolved. Non existing commands" %user_name
         client_sock.sendall("<Server>: [Error typing] Type '/help' see all possible commands")
 
-def kick_user(client_sock, user_name):
-    client_sock.sendall(">kick")
-    user_data = [client_sock, user_name]
-    kick_connections.append(user_data)
+def message_to(client_sock, message):
+    sublist = re.split(' ', message) # It will end as ['/messageto', 'username', 'whatever', ...]
+    index = get_user_index(sublist[1])
+
+    if (index != -1):
+        del sublist[0] # Remove command
+        print "LA SUBLIST HA QUEDADO:" + sublist
+        active_connections[index][2].sendall("PM from: " + sublist[0])
+        del sublist[0] # Remove user_name
+        active_connections[index][2].sendall(''.join(sublist))
+    else:
+        client_sock.sendall("Error 3 -> User not found")
+
+def kick_user(client_sock, message):
+    sublist = re.split(' ', message) # It will end as ['/kickuser', 'username', 'whatever', ...]
+    index = get_user_index(sublist[1])
+    if ( index != -1):
+        active_connections[index][2].sendall(">kick")
+        user_data = [client_sock, user_name] # Add to kick list
+        kick_connections.append(user_data)
+    else:
+        client_sock.sendall("Error 3 -> User not found")
 
 def change_grant(client_sock, user_name, message):
     client_sock.sendall(message)
     #TODO añadir grant al archivo de texto
 
 ##
+# Will search in the active_connections list to look for the appearance of the username
+#
+# @param: user_name
+#
+# @Return: (-1) if not found, (position) if found
+def get_user_index(user_name):
+    i = 0
+    encontrado = False
+    while (i < len(list) and (not encontrado)):
+        if (user_name == active_connections[i][0]):
+            encontrado = True
+        else:
+            i = i + 1
+    if encontrado:
+        return i
+    else:
+        return -1
+
+##
 # Print a list in a formated way
 #
 # @param list A list inputed as parameter
-# TODO: Change output format
 def print_list(list):
     print "N | User      | Grant  "
     i = 0
@@ -335,7 +403,7 @@ def main(argv):
     sock.bind((host, server_port))
     sock.listen(n_connection)
 
-    print 'Server on port ' + str(server_port)
+    print '] Server on port ' + str(server_port)
     logging.info("Server on port {}".format(server_port))
 
     stdout.flush() # Clean
@@ -343,7 +411,7 @@ def main(argv):
     try:
         while 1:
             client_connection, addr = sock.accept()
-            print 'Client connected on '  + str(addr[0]) + ':' + str(addr[1]) +'\n'
+            print '] Client connected on '  + str(addr[0]) + ':' + str(addr[1]) +'\n'
             logging.info("Chat Client Connected on IP {} & Port {}".format(host, server_port))
 
             stdout.flush() # Clean
@@ -354,9 +422,8 @@ def main(argv):
 
     except (KeyboardInterrupt, SystemExit):
         stdout.flush()
-        #TODO for every ip we must close the socket. We can see them in one of the conecction arrays
+        # For every ip we must close the socket
         clients_exit(sock)
-    #    sock.shutdown(1)
         sock.close()
         print "\nSever down ==================\n"
         os._exit(1)

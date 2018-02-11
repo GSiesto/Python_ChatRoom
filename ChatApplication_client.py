@@ -39,13 +39,14 @@ def send_message(sock, server_ip):
             sock.sendall(message)
     except:
         # ^C Control
+        print "] Forced exit when sending message"
         exit(sock)
 
 ##
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
     try:
-        while (1) and (not kick) and (free):
+        while (1) and  (kick == False) and (free == True):
             message = sock.recv(buffer_size)
             if (message.startswith(">")):
                 check_command(sock, message)
@@ -55,20 +56,26 @@ def receive_message(sock, server_ip):
                 stdout.flush() # Clean
     except:
         # ^C Control
+        print "] Forced exit when receiving message"
         exit(sock)
 
 def check_command(sock, message):
     if (message.startswith(">exit")):
+        print "] Exit by command >exit"
         exit(sock)
+
     elif (message.startswith(">kick")):
         kick = True;
         print "You have been Kicked by an administrator"
+
     elif (message.startwith(">busy")):
         Free = False
         print "You declared yourself as: Busy"
+
     elif (message.startwith(">free")):
         Free = True
         print "You declared yourself as: Free"
+
     elif (message.startwith(">changegrant")):
         if (message.startwith(">changegrant 0")):
             grant = 0
@@ -78,6 +85,7 @@ def check_command(sock, message):
             print "Grant chages to: Normaluser"
         else:
             print "ERROR with commands *changegrant* in client side"
+
     else:
         print "ERROR handling commands in client side"
 
@@ -111,9 +119,11 @@ def main(argv):
     try:
         while True:
             if (not connected):
+                print "] Exit because disconnection"
                 exit(sock)
                 os._exit(1) #Exit on Keyboard Interrupt
     except (KeyboardInterrupt, SystemExit):
+        print "] Forced exit by (KeyboardInterrupt or SystemExit) exception"
         exit(sock)
 
 
