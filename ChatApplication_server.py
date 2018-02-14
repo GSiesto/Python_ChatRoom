@@ -79,14 +79,18 @@ def connect_client(client_sock, client_ip_and_port):
                     check_message(client_sock, user_name, message)
             except:
                 print "] Exception when registering"
-                client_logout(client_sock, user_name)
+                client_sock.close()
+                print "\nSever down ==================\n"
+                os._exit(1)
+
         else:
+            print "ERROR 1 -> The username CAN'T exist in the database, try again"
             client_sock.sendall("<Server>: ERROR 1 -> The username CAN'T exist in the database, try again")
             connect_client(client_sock, client_ip_and_port)
 
 
     elif (credential_response[0] == 'n'):
-        if (credential_response[1][0] == True):
+        if (credential_response[1][0] == True): #POINT
             print '] USER:%s with IP:%s has join the room' %(credential_response[1][1], client_ip)
             client_sock.sendall('<Server>: Welcome back {} \n'.format(credential_response[1][1]))
             client_sock.sendall('================== < > ==================')
@@ -102,6 +106,7 @@ def connect_client(client_sock, client_ip_and_port):
                 if (user_name == sublist[0]):
                     grant = sublist[2]
                 i = i + 1
+            rDoc.close() # Closing document
 
             # Add to the active user list
             user_data = [user_name, grant, client_sock]
@@ -113,8 +118,11 @@ def connect_client(client_sock, client_ip_and_port):
                     check_message(client_sock, user_name, message)
             except:
                 print "] Exception when loginnig"
-                client_logout(client_sock, user_name)
+                client_sock.close()
+                print "\nSever down ==================\n"
+                os._exit(1)
         else:
+            print "ERROR 2 -> The credentials are incorrect"
             client_sock.sendall("<Server>: ERROR 2 -> The credentials are incorrect")
             connect_client(client_sock, client_ip_and_port)
 
@@ -149,6 +157,8 @@ def ask_credentials(client_sock):
     except ():
         print "] Exception while asking credentials"
         client_sock.close()
+        print "\nSever down ==================\n"
+        os._exit(1)
 
 
 ##
@@ -189,6 +199,7 @@ def create_user(client_sock):
         client_sock.sendall('<Server>: You must choose another username')
         answer = (False, user_name)
         ask_credentials(client_sock)
+
     aDoc.close() # Close document
     return answer
 
@@ -235,31 +246,24 @@ def login_user(client_sock):
 # 3. Close the socket from the server side
 #
 # @param client_sock Raw sock input
-def client_logout(client_sock, user_name):
-    #Send closing signal
-    client_sock.sendall("<Server>: You have been disconnected by the server")
-    client_sock.sendall(">exit")
-    #Handle lists
-    user_data = [user_name, client_sock]
-    print "Help me senpai"
-    print format(active_connections)
-    #active_connections.remove(user_data)
-    inactive_connections.append(user_data)
+def client_logout(client_sock):
+
+    print "] Disconnecting: " + format(active_connections[get_socket_index(client_sock)])
+    client_sock.sendall("<Server>: You are going to be disconnected by the server")
+    # Handle inactive list
+    inactive_connections.append(active_connections[get_socket_index(client_sock)])
+    # Closing
+    client_sock.shutdown(1)
     client_sock.close()
-    stdout.flush()
+    # Handle active list
+    active_connections.pop(get_socket_index(client_sock))
 
 def clients_exit(client_sock):
     stdout.flush()
     i = 0
     while i < len(active_connections):
-        active_connections[i][2].sendall(">exit")
-        active_connections[i][2].Close()
+        client_logout(active_connections[i][2])
         i += 1
-    # Clean all the list
-    i = len(active_connections)
-    while i >= 0:
-        active_connections.remove(0)
-        i -= 1
 
 ##
 # Check if the message introduced as a parameter is of the kind of "command"
@@ -273,11 +277,6 @@ def check_message(client_sock, user_name, message):
         print "] Checkeado init"
         check_command(client_sock, user_name, message)
         print "] Checkeado exit"
-    elif (message.startswith(">")):
-        if (message.startswith(">exit")):
-            print "TODO tengo que salir hehee"
-        else:
-            print "PUES NO PASI NADA hihihi"
     else:
         currentDT = datetime.datetime.now()
         # Print in every client screen
@@ -335,7 +334,7 @@ def check_command(client_sock, user_name, message):
 
     elif (message.startswith("/disconnect")):
         print "] %s solicit /disconnect" %user_name
-        client_logout(client_sock, user_name)
+        client_logout(client_sock)
 
     elif (message.startswith("/help")):
         print "] %s solicit /help" %user_name
@@ -364,7 +363,7 @@ def kick_user(client_sock, message):
     index = get_user_index(sublist[1])
     if ( index != -1):
         active_connections[index][2].sendall(">kick")
-        user_data = [client_sock, user_name] # Add to kick list
+        user_data = [user_name, active_connections[index][1], client_sock] # Add to kick list
         kick_connections.append(user_data)
     else:
         client_sock.sendall("Error 3 -> User not found")
@@ -384,6 +383,19 @@ def get_user_index(user_name):
     encontrado = False
     while (i < len(active_connections) and (not encontrado)):
         if (user_name == active_connections[i][0]):
+            encontrado = True
+        else:
+            i = i + 1
+    if encontrado:
+        return i
+    else:
+        return -1
+
+def get_socket_index(socket):
+    i = 0
+    encontrado = False
+    while (i < len(active_connections) and (not encontrado)):
+        if (socket == active_connections[i][2]):
             encontrado = True
         else:
             i = i + 1
@@ -433,7 +445,6 @@ def main(argv):
         stdout.flush()
         # For every ip we must close the socket
         clients_exit(sock)
-        sock.close()
         print "\nSever down ==================\n"
         os._exit(1)
 

@@ -40,7 +40,8 @@ def send_message(sock, server_ip):
     except:
         # ^C Control
         print "] Forced exit when sending message"
-        exit(sock)
+        connected = False
+        exit()
 
 ##
 # Receive a message thought the socket and process it
@@ -57,41 +58,38 @@ def receive_message(sock, server_ip):
     except:
         # ^C Control
         print "] Forced exit when receiving message"
-        exit(sock)
+        connected = False
+        exit()
 
 def check_command(sock, message):
-    if (message.startswith(">exit")):
-        print "] Exit by command >exit"
-        exit(sock)
-
-    elif (message.startswith(">kick")):
-        kick = True;
-        print "You have been Kicked by an administrator"
+    if (message.startswith(">kick")):
+        kick = True
+        print "] You have been Kicked by an administrator"
 
     elif (message.startwith(">busy")):
         Free = False
-        print "You declared yourself as: Busy"
+        print "] You declared yourself as: Busy"
 
     elif (message.startwith(">free")):
         Free = True
-        print "You declared yourself as: Free"
+        print "] You declared yourself as: Free"
 
     elif (message.startwith(">changegrant")):
         if (message.startwith(">changegrant 0")):
             grant = 0
-            print "Grant chages to: SuperUser"
+            print "] Grant chages to: SuperUser"
         elif (message.startwith(">changegrant 1")):
             grant = 1
-            print "Grant chages to: Normaluser"
+            print "] Grant chages to: Normaluser"
         else:
-            print "ERROR with commands *changegrant* in client side"
+            print "] ERROR with commands *changegrant* in client side"
 
     else:
-        print "ERROR handling commands in client side"
+        print "] ERROR handling commands in client side"
 
-def exit(sock):
-    sock.sendall(">exit")
+def exit():
     print "] Exit function"
+    connected = False
     stdout.flush()
     os._exit(1)
 
@@ -118,11 +116,13 @@ def main(argv):
         while True:
             if (not connected):
                 print "] Exit because disconnection"
-                exit(sock)
+                exit()
                 os._exit(1) #Exit on Keyboard Interrupt
     except (KeyboardInterrupt, SystemExit):
+        stdout.flush()
         print "] Forced exit by (KeyboardInterrupt or SystemExit) exception"
-        exit(sock)
+        logging.info("] Forced exit by (KeyboardInterrupt or SystemExit) exception")
+        exit()
 
 
 main(argv)
