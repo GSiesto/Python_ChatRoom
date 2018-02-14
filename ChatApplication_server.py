@@ -78,6 +78,7 @@ def connect_client(client_sock, client_ip_and_port):
                     message = client_sock.recv(buffer_size)
                     check_message(client_sock, user_name, message)
             except:
+                print "] Exception when registering"
                 client_logout(client_sock, user_name)
         else:
             client_sock.sendall("<Server>: ERROR 1 -> The username CAN'T exist in the database, try again")
@@ -96,8 +97,8 @@ def connect_client(client_sock, client_ip_and_port):
 
             grant = -1
             i = 0
-            while ((i < len(database_doc_list)) and (grant < 0)):
-                sublist = re.split('[; #]', database_doc_list[i]) #TODO GOOOD :)
+            while ((i < len(database_doc_list)) and (grant < 0)): # Working correctly
+                sublist = re.split('[; #]', database_doc_list[i])
                 if (user_name == sublist[0]):
                     grant = sublist[2]
                 i = i + 1
@@ -111,6 +112,7 @@ def connect_client(client_sock, client_ip_and_port):
                     message = client_sock.recv(buffer_size)
                     check_message(client_sock, user_name, message)
             except:
+                print "] Exception when loginnig"
                 client_logout(client_sock, user_name)
         else:
             client_sock.sendall("<Server>: ERROR 2 -> The credentials are incorrect")
@@ -234,13 +236,16 @@ def login_user(client_sock):
 #
 # @param client_sock Raw sock input
 def client_logout(client_sock, user_name):
-    client_sock.sendall("<Server>: You has been disconnected by the server")
+    #Send closing signal
+    client_sock.sendall("<Server>: You have been disconnected by the server")
+    client_sock.sendall(">exit")
     #Handle lists
     user_data = [user_name, client_sock]
-    active_connections.remove(user_data)
+    print "Help me senpai"
+    print format(active_connections)
+    #active_connections.remove(user_data)
     inactive_connections.append(user_data)
-    #Send closing signal
-    client_sock.sendall(">exit")
+    client_sock.close()
     stdout.flush()
 
 def clients_exit(client_sock):
@@ -248,9 +253,13 @@ def clients_exit(client_sock):
     i = 0
     while i < len(active_connections):
         active_connections[i][2].sendall(">exit")
-        #active_connections[i][2].Close()
-        #TODO borrar de la lista
+        active_connections[i][2].Close()
         i += 1
+    # Clean all the list
+    i = len(active_connections)
+    while i >= 0:
+        active_connections.remove(0)
+        i -= 1
 
 ##
 # Check if the message introduced as a parameter is of the kind of "command"
@@ -373,7 +382,7 @@ def change_grant(client_sock, user_name, message):
 def get_user_index(user_name):
     i = 0
     encontrado = False
-    while (i < len(list) and (not encontrado)):
+    while (i < len(active_connections) and (not encontrado)):
         if (user_name == active_connections[i][0]):
             encontrado = True
         else:

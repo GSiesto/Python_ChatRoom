@@ -91,10 +91,8 @@ def check_command(sock, message):
 
 def exit(sock):
     sock.sendall(">exit")
+    print "] Exit function"
     stdout.flush()
-    sock.close()
-    print "Connection to server closed" #Close server
-    logging.info("Connection to server closed")
     os._exit(1)
 
 ##
