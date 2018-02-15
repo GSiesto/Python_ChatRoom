@@ -76,9 +76,10 @@ def connect_client(client_sock, client_ip_and_port):
             try:
                 while 1:
                     message = client_sock.recv(buffer_size)
-                    check_message(client_sock, user_name, message)
+                    msg = message
+                    check_message(client_sock, user_name, msg)
             except:
-                print "] Exception when registering"
+                print "] Exception when receiving on register"
                 client_exit(client_sock)
                 print "\nSever down ==================\n"
                 os._exit(1)
@@ -113,11 +114,12 @@ def connect_client(client_sock, client_ip_and_port):
             active_connections.append(user_data)
 
             try:
-                while (get_socket_index(client_sock) != -1): # If it's equal to -1 is because is not an active conecction
+                while (1): # len(active_connections) > 1 While there is an active connection try to receive #TODO Check neccesity
                     message = client_sock.recv(buffer_size)
-                    check_message(client_sock, user_name, message)
+                    msg = message
+                    check_message(client_sock, user_name, msg)
             except:
-                print "] Exception when loginnig"
+                print "] Exception when receiving on login"
                 client_exit(client_sock)
                 print "\nSever down ==================\n"
                 os._exit(1)
@@ -242,8 +244,12 @@ def login_user(client_sock):
 
 def client_exit(client_sock):
     stdout.flush()
+    print "---ALL ACTIVE CONNECTIONS:---"
+    print format(active_connections)
+    print "-----------------------------"
     print "] Disconnecting: " + format(active_connections[get_socket_index(client_sock)])
     client_sock.sendall("<Server>: You are going to be disconnected by the server")
+    client_sock.sendall(">disconnect")
 
     inactive_connections.append(active_connections[get_socket_index(client_sock)])
     active_connections.pop(get_socket_index(client_sock))
@@ -298,7 +304,8 @@ def check_command(client_sock, user_name, message):
         print "e changepassword"
     elif msg.startswith("/busy"):
         print "] %s solicit /busy" %user_name
-        client_sock.sendall(">busy")
+        client_sock.sendall(">info")
+        #client_sock.sendall(">busy")
     elif msg.startswith("/free"):
         print "] %s solicit /free" %user_name
         client_sock.sendall(">free")

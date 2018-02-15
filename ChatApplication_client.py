@@ -17,6 +17,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv, stdout
 import os # For exiting of every thread
 from threading import Thread #Threading
+import threading
 
 ##
 # Config
@@ -30,13 +31,24 @@ grant = 1 # 0 = Superuser ; 1 = Normaluser
 connected = False # We must control if the conecction is on for exiting the thread if neccesary
 buffer_size = 12800
 
+# ========= LOCKS ⚩
+send = threading.Lock()
+receive = threading.Lock()
+
 ##
 # Send a general message to the common room
 def send_message(sock, server_ip):
     try:
         while 1:
             message = raw_input()
-            sock.sendall(message)
+            #send.acquire() # Lock ========================== ⚩
+            msg = message
+            if (msg.startswith(">")):
+                print "ZOY UN COMMANDITO HIHHI"
+                check_command(sock, msg)
+            else:
+                sock.sendall(msg)
+            #send.release() # Lock ========================== ⚩
     except:
         # ^C Control
         print "] Forced exit when sending message"
@@ -47,14 +59,22 @@ def send_message(sock, server_ip):
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
     try:
-        while (1) and  (kick == False) and (free == True):
+        while (1):
+            #if (kick == False):
             message = sock.recv(buffer_size)
-            if (message.startswith(">")):
-                check_command(sock, message)
+            #receive.acquire() # Lock ========================== ⚩
+            msg = message
+            if (msg.startswith(">")):
+                print "] Command received"
+                check_command(sock, msg)
                 stdout.flush() # Clean
             else:
-                print message
-                stdout.flush() # Clean
+                if (free == True):
+                    print msg
+                    stdout.flush() # Clean
+                else:
+                    stdout.flush() # Clean
+            #receive.release() # Lock ========================== ⚩
     except:
         # ^C Control
         print "] Forced exit when receiving message"
@@ -62,30 +82,36 @@ def receive_message(sock, server_ip):
         exit()
 
 def check_command(sock, message):
-    if (message.startswith(">kick")):
-        kick = True
-        print "] You have been Kicked by an administrator"
-
-    elif (message.startwith(">busy")):
-        Free = False
-        print "] You declared yourself as: Busy"
-
-    elif (message.startwith(">free")):
-        Free = True
-        print "] You declared yourself as: Free"
-
-    elif (message.startwith(">changegrant")):
-        if (message.startwith(">changegrant 0")):
-            grant = 0
-            print "] Grant chages to: SuperUser"
-        elif (message.startwith(">changegrant 1")):
-            grant = 1
-            print "] Grant chages to: Normaluser"
+    try:
+        msg = message
+        if msg.startswith(">kick"):
+            kick = True
+            print "] You have been Kicked by an administrator"
+        elif msg.startwith(">info"):
+            print "SOY UNA INFORMACION MUY BONITA"
+            stdout.flush() # Clean
+        elif msg.startswith(">disconnect"):
+            connected = False
+            print "] You have been disconnected"
+        elif msg.startwith(">busy"):
+            print "] You declared yourself as: Busy"
+            Free = False
+        elif msg.startwith(">free"):
+            print "] You declared yourself as: Free"
+            Free = True
+        elif msg.startwith(">changegrant"):
+            if msg.startwith(">changegrant 0"):
+                grant = 0
+                print "] Grant chages to: SuperUser"
+            elif msg.startwith(">changegrant 1"):
+                grant = 1
+                print "] Grant chages to: Normaluser"
+            else:
+                print "] ERROR with commands *changegrant* in client side"
         else:
-            print "] ERROR with commands *changegrant* in client side"
-
-    else:
-        print "] ERROR handling commands in client side"
+            print "] ERROR typing commands in client side from server side"
+    except:
+        print "] Exception on command checking"
 
 def exit():
     print "] Exit function"
@@ -100,6 +126,7 @@ def main(argv):
     server_port = int(argv[2])
 
     sock = socket(AF_INET, SOCK_STREAM)
+
     sock.connect((server_ip, server_port))
     connected = True
 
