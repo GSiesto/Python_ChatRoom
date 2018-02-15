@@ -114,7 +114,7 @@ def main(argv):
 
     try:
         while True:
-            if (not connected):
+            if (connected == False):
                 print "] Exit because disconnection"
                 exit()
                 os._exit(1) #Exit on Keyboard Interrupt

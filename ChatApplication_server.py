@@ -79,7 +79,7 @@ def connect_client(client_sock, client_ip_and_port):
                     check_message(client_sock, user_name, message)
             except:
                 print "] Exception when registering"
-                client_sock.close()
+                client_exit(client_sock)
                 print "\nSever down ==================\n"
                 os._exit(1)
 
@@ -113,12 +113,12 @@ def connect_client(client_sock, client_ip_and_port):
             active_connections.append(user_data)
 
             try:
-                while 1:
+                while (get_socket_index(client_sock) != -1): # If it's equal to -1 is because is not an active conecction
                     message = client_sock.recv(buffer_size)
                     check_message(client_sock, user_name, message)
             except:
                 print "] Exception when loginnig"
-                client_sock.close()
+                client_exit(client_sock)
                 print "\nSever down ==================\n"
                 os._exit(1)
         else:
@@ -239,30 +239,24 @@ def login_user(client_sock):
     rDoc.close() # Close the document
     return answer
 
-##
-# Client logout from the server:
-# 1. Send a signal to the client for closing the socket in the client side
-# 2. Flush
-# 3. Close the socket from the server side
-#
-# @param client_sock Raw sock input
-def client_logout(client_sock):
 
+def client_exit(client_sock):
+    stdout.flush()
     print "] Disconnecting: " + format(active_connections[get_socket_index(client_sock)])
     client_sock.sendall("<Server>: You are going to be disconnected by the server")
-    # Handle inactive list
+
     inactive_connections.append(active_connections[get_socket_index(client_sock)])
-    # Closing
-    client_sock.shutdown(1)
-    client_sock.close()
-    # Handle active list
     active_connections.pop(get_socket_index(client_sock))
+
+    stdout.flush()
+    client_sock.close()
 
 def clients_exit(client_sock):
     stdout.flush()
     i = 0
     while i < len(active_connections):
-        client_logout(active_connections[i][2])
+        # Handle lists
+        client_exit(active_connections[i][2])
         i += 1
 
 ##
@@ -292,55 +286,43 @@ def check_message(client_sock, user_name, message):
 #
 # @param message String with the text input
 def check_command(client_sock, user_name, message):
-    if (message.startswith("/viewusers")):
+    msg = message
+    if msg.startswith("/viewusers"):
         print "] %s solicit /viewusers" %user_name
         print_list(active_connections)
-
-    elif (message.startswith("/messageto")):
+    elif msg.startswith("/messageto"):
         print "] %s solicit /messageto" %user_name
         message_to(client_sock, message)
-
-    elif (message.startswith("/changepassword")):
+    elif msg.startswith("/changepassword"):
         print "] %s solicit /changepassword" %user_name
         print "e changepassword"
-
-    elif (message.startswith("/busy")):
+    elif msg.startswith("/busy"):
         print "] %s solicit /busy" %user_name
         client_sock.sendall(">busy")
-
-    elif (message.startswith("/free")):
+    elif msg.startswith("/free"):
         print "] %s solicit /free" %user_name
         client_sock.sendall(">free")
-
-    elif (message.startwith("/changegrant")):
+    elif msg.startswith("/changegrant"):
         print "] %s solicit /changegrant" %user_name
         change_grant(client_sock, user_name, message)
-
-    elif (message.startswith("/kickuser")):
+    elif msg.startswith("/kickuser"):
         print "] %s solicit /kickuser" %user_name
         kick_user(client_sock, message)
-
-    elif (message.startswith("/viewkickusers")):
+    elif msg.startswith("/viewkickusers"):
         print "] %s solicit /viewkickusers" %user_name
         print_list(kick_connections)
-
-    elif (message.startswith("/restart")):
+    elif msg.startswith("/restart"):
         print "] %s solicit /restart" %user_name
         print "e restart"
-
-    elif (message.startswith("/senddata")):
+    elif msg.startswith("/senddata"):
         print "] %s solicit /senddata" %user_name
         print "e senddata"
-
-    elif (message.startswith("/disconnect")):
+    elif msg.startswith("/disconnect"):
         print "] %s solicit /disconnect" %user_name
-        client_logout(client_sock)
-
-    elif (message.startswith("/help")):
+        client_exit(client_sock)
+    elif msg.startswith("/help"):
         print "] %s solicit /help" %user_name
-        client_sock.sendall("HOLITAhahaha")
-        #You can type: /viewusers\n/messageto\n/changepassword\n/busy\n/free\n/changegrant\n/kickuser\n/viewkickusers\n/restart\n/senddata\n/disconnect
-
+        client_sock.sendall("You can type:\n /viewusers\n /messageto\n /changepassword\n /busy\n /free\n /changegrant\n /kickuser\n /viewkickusers\n /restart\n /senddata\n /disconnect")
     else:
         print "] %s solicit couldm't be resolved. Non existing commands" %user_name
         client_sock.sendall("<Server>: [Error typing] Type '/help' see all possible commands")
