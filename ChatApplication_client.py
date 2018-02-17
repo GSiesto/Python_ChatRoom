@@ -3,6 +3,7 @@
 ##
 # University of the West of Scotland
 # Author: Guillermo Siesto Sanchez B00334584
+# e-Mail: b00334684 at studentmail.uws.ac.uk
 # Date: 2018
 # Description: The purpose of this coursework is to develop a distributed
 #   chat system using a networking library.
@@ -37,37 +38,36 @@ buffer_size = 12800
 
 ##
 # Locks ⚩
-send = threading.Lock()
-receive = threading.Lock()
+lock = threading.RLock()
 
 
 ##
 # Send a general message to the common room
 def send_message(sock, server_ip):
+    global kick
     try:
-        while 1:
+        global connected
+        while ((not kick)):     # connected and ...
             message = raw_input()
-            #send.acquire() # Lock ========================== ⚩
             msg = message
             sock.sendall(msg)
-            #send.release() # Lock ========================== ⚩
     except ():
         # ^C Control
         print "] Forced exit when sending message"
-        global connected
-        connected = False
+        with lock:      # =========================== ⚩ 
+            connected = False
+            print "} ESTATE of connected:" + format(connected)
         exit()
 
 
 ##
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
-    global connected
+    global kick
     try:
-        while (connected):
-            # if (not global kick):
+        global connected
+        while ((connected) and (not kick)):
             message = sock.recv(buffer_size)
-            #receive.acquire() # Lock ========================== ⚩
             msg = message
             if (msg.startswith(">")):
                 print "] Command received"
@@ -79,20 +79,20 @@ def receive_message(sock, server_ip):
                     stdout.flush()  # Clean
                 else:
                     stdout.flush()  # Clean
-            #receive.release() # Lock ========================== ⚩
     except ():
         # ^C Control
         print "] Forced exit when receiving message"
-        connected  = False
+        with lock:      # =========================== ⚩
+            connected = False
+            print "} ESTATE of connected:" + format(connected)
         exit()
 
 
 def check_command(sock, message):
     try:
         global free
-        global connected
-        global kick
         global grant
+        global kick
         msg = message
         print "MESSAGE: " + msg
         if msg.startswith(">kick"):
@@ -102,8 +102,11 @@ def check_command(sock, message):
             print "SOY UNA INFORMACION MUY BONITA"
             stdout.flush()      # Clean
         elif msg.startswith(">disconnect"):
-            connected = False
-            print "] You have been disconnected"
+            with lock:      # =========================== ⚩
+                global connected
+                connected = False
+                print "} ESTATE of connected:" + format(connected)
+                print "] You have been disconnected"
         elif msg.startswith(">busy"):
             print "] You declared yourself as: Busy"
             free = False
@@ -127,8 +130,10 @@ def check_command(sock, message):
 
 def exit():
     print "] Exit function"
-    global connected
-    connected = False
+    with lock:      # =========================== ⚩
+        global connected
+        connected = False
+        print "} ESTATE of connected:" + format(connected)
     stdout.flush()
     os._exit(1)
 
@@ -142,8 +147,12 @@ def main(argv):
     sock = socket(AF_INET, SOCK_STREAM)
 
     sock.connect((server_ip, server_port))
-    global connected
-    connected = True
+    with lock:      # =========================== ⚩
+        global connected
+        connected = True
+        print "} ESTATE of connected:" + format(connected)
+
+    print "****PRIMER LOCK SUELTITO HIHIHI!"
 
     # ============== 2 Active Threads
     # THREADIND
@@ -155,7 +164,7 @@ def main(argv):
     receiving_t.start()
 
     try:
-        while True:
+        while (1):
             if (not connected):
                 print "] Exit because disconnection"
                 exit()

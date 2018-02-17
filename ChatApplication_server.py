@@ -3,9 +3,10 @@
 ##
 # University of the West of Scotland
 # Author: Guillermo Siesto Sanchez B00334584
+# e-Mail: b00334684 at studentmail.uws.ac.uk
 # Date: 2018
 # Description: The purpose of this coursework is to develop a distributed chat
-#   system using a networking library.
+#   system without using any thrid party networking library.
 #
 # ===========
 # S E R V E R
@@ -304,7 +305,7 @@ def check_command(client_sock, user_name, message):
     msg = message
     if msg.startswith("/viewusers"):
         print "] %s solicit /viewusers" % user_name
-        print_list(active_connections)
+        print_list_client(client_sock, active_connections)
     elif msg.startswith("/messageto"):
         print "] %s solicit /messageto" % user_name
         message_to(client_sock, message)
@@ -325,7 +326,7 @@ def check_command(client_sock, user_name, message):
         kick_user(client_sock, message)
     elif msg.startswith("/viewkickusers"):
         print "] %s solicit /viewkickusers" % user_name
-        print_list(kick_connections)
+        print_list_client(client_sock, kick_connections)
     elif msg.startswith("/restart"):
         print "] %s solicit /restart" % user_name
         print "e restart"
@@ -358,14 +359,17 @@ def message_to(client_sock, message):
 
 
 def kick_user(client_sock, message):
-    sublist = re.split(' ', message) # It will end as ['/kickuser', 'username', 'whatever', ...]
+    sublist = re.split(' ', message)    # It will end as ['/kickuser', 'username', 'whatever', ...]
     index = get_user_index(sublist[1])
     if (index != -1):
-        active_connections[index][2].sendall(">kick")
-        user_data = [user_name, active_connections[index][1], client_sock]      # Add to kick list
-        kick_connections.append(user_data)
+        if (active_connections[get_socket_index(client_sock)][1] == '0'):     # Only if the origin user is a superuser
+            active_connections[index][2].sendall(">kick")
+            user_data = [active_connections[index][0], active_connections[index][1], active_connections[index][2]]      # Add to kick list
+            kick_connections.append(user_data)
+        else:
+            client_sock.sendall("Error 3 -> You don't have the grant to make that operation")
     else:
-        client_sock.sendall("Error 3 -> User not found")
+        client_sock.sendall("Error 4 -> User not found")
 
 
 def change_grant(client_sock, user_name, message):
@@ -412,12 +416,15 @@ def get_socket_index(socket):
 # Print a list in a formated way
 #
 # @param list A list inputed as parameter
-def print_list(list):
-    print "N | User      | Grant  "
+def print_list_client(client_sock, list):
+    client_sock.sendall("\n\n---------------------------------\n")
+    client_sock.sendall(" N | User      | Grant  \n")
+
     i = 0
     while (i < len(list)):
-        print format(i) + " | " + format(list[i][0]) + " | " + format(list[i][1])
+        client_sock.sendall(" " + format(i) + " | " + format(list[i][0]) + " | " + format(list[i][1]) + "\n")
         i = i + 1
+    client_sock.sendall("---------------------------------\n\n")
 
 
 ##
@@ -440,7 +447,7 @@ def main(argv):
             print '] Client connected on '  + str(addr[0]) + ':' + str(addr[1]) + '\n'
             logging.info("Chat Client Connected on IP {} & Port {}".format(host, server_port))
 
-            stdout.flush() # Clean
+            stdout.flush()      # Clean
 
             # THREADIND
             server_t = Thread(target=connect_client, args=(client_connection, addr))
