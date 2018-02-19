@@ -38,10 +38,9 @@ buffer_size = 12800
 ##
 # Send a general message to the common room
 def send_message(sock, server_ip):
+    global connected
     try:
-        global connected
-        while (connected):     # TODO connected and ...
-            message = raw_input()
+        while True:
             message = raw_input()
             sock.sendall(message)
     except ():
@@ -55,9 +54,9 @@ def send_message(sock, server_ip):
 ##
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
+    global connected
     try:
-        global connected
-        while connected:
+        while True:
             message = sock.recv(buffer_size)
             if (message.startswith(">")):
                 print "] Command received"
@@ -78,10 +77,10 @@ def receive_message(sock, server_ip):
 
 
 def check_command(sock, message):
+    global connected
+    global free
+    global grant
     try:
-        global connected
-        global free
-        global grant
         msg = message
         print "MESSAGE: " + msg
         if msg.startswith(">kick"):     # Also using disconnect
@@ -116,6 +115,7 @@ def check_command(sock, message):
 
 def exit():
     print "] Exit function"
+    global connected
     connected = False
     print "} ESTATE of connected:" + format(connected)
     stdout.flush()
@@ -131,33 +131,31 @@ def main(argv):
     sock = socket(AF_INET, SOCK_STREAM)
 
     sock.connect((server_ip, server_port))
+    global connected
     connected = True
     print "} ESTATE of connected:" + format(connected)
 
     # ============== 2 Active Threads
     # THREADIND
     # Thread for Sendind
-    sending_t = Thread(target=send_message, args=(sock, server_ip))
+    sending_t = threading.Thread(target=send_message, args=(sock, server_ip))
+    sending_t.daemon = True
     sending_t.start()
     # Thread for Receiving
-    receiving_t = Thread(target=receive_message, args=(sock, server_ip))
+    receiving_t = threading.Thread(target=receive_message, args=(sock, server_ip))
+    receiving_t.daemon = True
     receiving_t.start()
-    # Joining
-    #sending_t.join()
-    #receiving_t.join()
 
     try:
-        while (1):
+        while True:
             if (not connected):
                 print "] Exit because disconnection"
                 exit()
-                os._exit(1)     # Exit on Keyboard Interrupt
     except (KeyboardInterrupt, SystemExit):
         stdout.flush()
         print "] Forced exit by (KeyboardInterrupt or SystemExit) exception"
         logging.info(
             "] Forced exit by (KeyboardInterrupt or SystemExit) exception")
-        exit()
 
 
 main(argv)
