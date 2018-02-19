@@ -35,16 +35,11 @@ grant = 1               # 0 = Superuser ; 1 = Normaluser
 connected = False       # For wxiting the thread
 buffer_size = 12800
 
-##
-# Locks ⚩
-lock = threading.RLock()
-
 
 ##
 # Send a general message to the common room
 def send_message(sock, server_ip):
     try:
-        global connected
         while (connected):     # TODO connected and ...
             message = raw_input()
             message = raw_input()
@@ -52,10 +47,8 @@ def send_message(sock, server_ip):
     except ():
         # ^C Control
         print "] Forced exit when sending message"
-        with lock:      # =========================== ⚩
-            global connected
-            connected = False
-            print "} ESTATE of connected:" + format(connected)
+        connected = False
+        print "} ESTATE of connected:" + format(connected)
         exit()
 
 
@@ -63,7 +56,6 @@ def send_message(sock, server_ip):
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
     try:
-        global connected
         while ((connected)):
             message = sock.recv(buffer_size)
             if (message.startswith(">")):
@@ -79,58 +71,49 @@ def receive_message(sock, server_ip):
     except ():
         # ^C Control
         print "] Forced exit when receiving message"
-        with lock:      # =========================== ⚩
-            global connected
-            connected = False
-            print "} ESTATE of connected:" + format(connected)
+        connected = False
+        print "} ESTATE of connected:" + format(connected)
         exit()
 
 
 def check_command(sock, message):
     try:
-        global free
-        global grant
-        with lock:
-            msg = message
-            print "MESSAGE: " + msg
-            if msg.startswith(">kick"):     # Also using disconnect
-                print "] You have been Kicked by an administrator"
-            elif msg.startswith(">info"):
-                print "SOY UNA INFORMACION MUY BONITA"
-                stdout.flush()      # Clean
-            elif msg.startswith(">disconnect"):
-                with lock:      # =========================== ⚩
-                    global connected
-                    connected = False
-                    print "} ESTATE of connected:" + format(connected)
-                    print "] You have been disconnected"
-            elif msg.startswith(">busy"):
-                print "] You declared yourself as: Busy"
-                free = False
-            elif msg.startswith(">free"):
-                print "] You declared yourself as: Free"
-                free = True
-            elif msg.startswith(">changegrant"):
-                if msg.startswith(">changegrant 0"):
-                    grant = 0
-                    print "] Grant chages to: SuperUser"
-                elif msg.startswith(">changegrant 1"):
-                    grant = 1
-                    print "] Grant chages to: Normaluser"
-                else:
-                    print "] ERROR with commands *changegrant* in client side"
+        msg = message
+        print "MESSAGE: " + msg
+        if msg.startswith(">kick"):     # Also using disconnect
+            print "] You have been Kicked by an administrator"
+        elif msg.startswith(">info"):
+            print "SOY UNA INFORMACION MUY BONITA"
+            stdout.flush()      # Clean
+        elif msg.startswith(">disconnect"):
+            connected = False
+            print "} ESTATE of connected:" + format(connected)
+            print "] You have been disconnected"
+        elif msg.startswith(">busy"):
+            print "] You declared yourself as: Busy"
+            free = False
+        elif msg.startswith(">free"):
+            print "] You declared yourself as: Free"
+            free = True
+        elif msg.startswith(">changegrant"):
+            if msg.startswith(">changegrant 0"):
+                grant = 0
+                print "] Grant chages to: SuperUser"
+            elif msg.startswith(">changegrant 1"):
+                grant = 1
+                print "] Grant chages to: Normaluser"
             else:
-                print "] ERROR typing commands in client side from server side"
+                print "] ERROR with commands *changegrant* in client side"
+        else:
+            print "] ERROR typing commands in client side from server side"
     except ():
         print "] Exception on command checking"
 
 
 def exit():
     print "] Exit function"
-    with lock:      # =========================== ⚩
-        global connected
-        connected = False
-        print "} ESTATE of connected:" + format(connected)
+    connected = False
+    print "} ESTATE of connected:" + format(connected)
     stdout.flush()
     os._exit(1)
 
@@ -144,12 +127,8 @@ def main(argv):
     sock = socket(AF_INET, SOCK_STREAM)
 
     sock.connect((server_ip, server_port))
-    with lock:      # =========================== ⚩
-        global connected
-        connected = True
-        print "} ESTATE of connected:" + format(connected)
-
-    print "****PRIMER LOCK SUELTITO HIHIHI!"
+    connected = True
+    print "} ESTATE of connected:" + format(connected)
 
     # ============== 2 Active Threads
     # THREADIND
