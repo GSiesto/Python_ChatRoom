@@ -19,8 +19,7 @@ import logging      # Generate a log file to record all the changes made
 from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv, stdout
 import os           # For exiting of every thread
-from threading import Thread    # Threading
-import threading
+import threading    # Threading
 
 ##
 # Config
@@ -40,6 +39,7 @@ buffer_size = 12800
 # Send a general message to the common room
 def send_message(sock, server_ip):
     try:
+        global connected
         while (connected):     # TODO connected and ...
             message = raw_input()
             message = raw_input()
@@ -56,7 +56,8 @@ def send_message(sock, server_ip):
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
     try:
-        while ((connected)):
+        global connected
+        while connected:
             message = sock.recv(buffer_size)
             if (message.startswith(">")):
                 print "] Command received"
@@ -78,6 +79,9 @@ def receive_message(sock, server_ip):
 
 def check_command(sock, message):
     try:
+        global connected
+        global free
+        global grant
         msg = message
         print "MESSAGE: " + msg
         if msg.startswith(">kick"):     # Also using disconnect
