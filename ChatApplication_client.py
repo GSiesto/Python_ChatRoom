@@ -45,16 +45,15 @@ lock = threading.RLock()
 def send_message(sock, server_ip):
     try:
         global connected
-        with lock:
-            tmp = connected
-        while (tmp):     # TODO connected and ...
+        while (connected):     # TODO connected and ...
             message = raw_input()
-            msg = message
-            sock.sendall(msg)
+            message = raw_input()
+            sock.sendall(message)
     except ():
         # ^C Control
         print "] Forced exit when sending message"
         with lock:      # =========================== ⚩
+            global connected
             connected = False
             print "} ESTATE of connected:" + format(connected)
         exit()
@@ -65,18 +64,15 @@ def send_message(sock, server_ip):
 def receive_message(sock, server_ip):
     try:
         global connected
-        with lock:
-            tmp = connected
-        while (tmp):
+        while ((connected)):
             message = sock.recv(buffer_size)
-            msg = message
-            if (msg.startswith(">")):
+            if (message.startswith(">")):
                 print "] Command received"
-                check_command(sock, msg)
+                check_command(sock, message)
                 stdout.flush()      # Clean
             else:
                 if (free):
-                    print msg
+                    print message
                     stdout.flush()  # Clean
                 else:
                     stdout.flush()  # Clean
@@ -84,6 +80,7 @@ def receive_message(sock, server_ip):
         # ^C Control
         print "] Forced exit when receiving message"
         with lock:      # =========================== ⚩
+            global connected
             connected = False
             print "} ESTATE of connected:" + format(connected)
         exit()
@@ -162,6 +159,9 @@ def main(argv):
     # Thread for Receiving
     receiving_t = Thread(target=receive_message, args=(sock, server_ip))
     receiving_t.start()
+    # Joining
+    #sending_t.join()
+    #receiving_t.join()
 
     try:
         while (1):
