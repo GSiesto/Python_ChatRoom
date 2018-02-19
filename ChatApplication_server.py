@@ -305,6 +305,7 @@ def check_command(client_sock, user_name, message):
     msg = message
     if msg.startswith("/viewusers"):
         print "] %s solicit /viewusers" % user_name
+        print "================= ACTIVE CONNECTIONS"
         print_list_client(client_sock, active_connections)
     elif msg.startswith("/messageto"):
         print "] %s solicit /messageto" % user_name
@@ -326,6 +327,7 @@ def check_command(client_sock, user_name, message):
         kick_user(client_sock, message)
     elif msg.startswith("/viewkickusers"):
         print "] %s solicit /viewkickusers" % user_name
+        print "================= KICK CONNECTIONS"
         print_list_client(client_sock, kick_connections)
     elif msg.startswith("/restart"):
         print "] %s solicit /restart" % user_name
@@ -366,6 +368,11 @@ def kick_user(client_sock, message):
             active_connections[index][2].sendall(">kick")
             user_data = [active_connections[index][0], active_connections[index][1], active_connections[index][2]]      # Add to kick list
             kick_connections.append(user_data)
+
+            client_sock.sendall("================= KICK CONNECTIONS")
+            print_list_client(client_sock, kick_connections)
+
+            client_exit(active_connections[index][2])
         else:
             client_sock.sendall("Error 3 -> You don't have the grant to make that operation")
     else:

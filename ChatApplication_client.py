@@ -31,7 +31,6 @@ logging.basicConfig(level=logging.INFO,
 ##
 # Inicialization
 free = True
-kick = False
 grant = 1               # 0 = Superuser ; 1 = Normaluser
 connected = False       # For wxiting the thread
 buffer_size = 12800
@@ -44,17 +43,18 @@ lock = threading.RLock()
 ##
 # Send a general message to the common room
 def send_message(sock, server_ip):
-    global kick
     try:
         global connected
-        while ((not kick)):     # connected and ...
+        with lock:
+            tmp = connected
+        while (tmp):     # TODO connected and ...
             message = raw_input()
             msg = message
             sock.sendall(msg)
     except ():
         # ^C Control
         print "] Forced exit when sending message"
-        with lock:      # =========================== ⚩ 
+        with lock:      # =========================== ⚩
             connected = False
             print "} ESTATE of connected:" + format(connected)
         exit()
@@ -63,10 +63,11 @@ def send_message(sock, server_ip):
 ##
 # Receive a message thought the socket and process it
 def receive_message(sock, server_ip):
-    global kick
     try:
         global connected
-        while ((connected) and (not kick)):
+        with lock:
+            tmp = connected
+        while (tmp):
             message = sock.recv(buffer_size)
             msg = message
             if (msg.startswith(">")):
@@ -92,38 +93,37 @@ def check_command(sock, message):
     try:
         global free
         global grant
-        global kick
-        msg = message
-        print "MESSAGE: " + msg
-        if msg.startswith(">kick"):
-            kick = True
-            print "] You have been Kicked by an administrator"
-        elif msg.startswith(">info"):
-            print "SOY UNA INFORMACION MUY BONITA"
-            stdout.flush()      # Clean
-        elif msg.startswith(">disconnect"):
-            with lock:      # =========================== ⚩
-                global connected
-                connected = False
-                print "} ESTATE of connected:" + format(connected)
-                print "] You have been disconnected"
-        elif msg.startswith(">busy"):
-            print "] You declared yourself as: Busy"
-            free = False
-        elif msg.startswith(">free"):
-            print "] You declared yourself as: Free"
-            free = True
-        elif msg.startswith(">changegrant"):
-            if msg.startswith(">changegrant 0"):
-                grant = 0
-                print "] Grant chages to: SuperUser"
-            elif msg.startswith(">changegrant 1"):
-                grant = 1
-                print "] Grant chages to: Normaluser"
+        with lock:
+            msg = message
+            print "MESSAGE: " + msg
+            if msg.startswith(">kick"):     # Also using disconnect
+                print "] You have been Kicked by an administrator"
+            elif msg.startswith(">info"):
+                print "SOY UNA INFORMACION MUY BONITA"
+                stdout.flush()      # Clean
+            elif msg.startswith(">disconnect"):
+                with lock:      # =========================== ⚩
+                    global connected
+                    connected = False
+                    print "} ESTATE of connected:" + format(connected)
+                    print "] You have been disconnected"
+            elif msg.startswith(">busy"):
+                print "] You declared yourself as: Busy"
+                free = False
+            elif msg.startswith(">free"):
+                print "] You declared yourself as: Free"
+                free = True
+            elif msg.startswith(">changegrant"):
+                if msg.startswith(">changegrant 0"):
+                    grant = 0
+                    print "] Grant chages to: SuperUser"
+                elif msg.startswith(">changegrant 1"):
+                    grant = 1
+                    print "] Grant chages to: Normaluser"
+                else:
+                    print "] ERROR with commands *changegrant* in client side"
             else:
-                print "] ERROR with commands *changegrant* in client side"
-        else:
-            print "] ERROR typing commands in client side from server side"
+                print "] ERROR typing commands in client side from server side"
     except ():
         print "] Exception on command checking"
 
