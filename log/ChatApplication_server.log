@@ -1250,3 +1250,169 @@
 [INFO] 2018-02-19 20:18:56,705 Server on port 9797
 [INFO] 2018-02-19 20:18:58,797 Chat Client Connected on IP 127.0.0.1 & Port 9797
 [INFO] 2018-02-19 20:19:03,505 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:46:44,112 Server on port 9797
+[INFO] 2018-02-20 10:46:55,460 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:47:01,338 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:49:09,902 Server on port 9797
+[INFO] 2018-02-20 10:49:11,821 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:49:16,085 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:50:07,659 Server on port 9797
+[INFO] 2018-02-20 10:50:11,310 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:50:15,604 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:51:25,605 Server on port 9797
+[INFO] 2018-02-20 10:51:29,016 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:51:32,861 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:51:43,038 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:51:45,423 User Login Info = ('n', (True, 'q'))
+[INFO] 2018-02-20 10:52:32,790 Server on port 9797
+[INFO] 2018-02-20 10:52:33,693 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:52:45,198 User Login Info = None
+[INFO] 2018-02-20 10:53:30,178 Server on port 9797
+[INFO] 2018-02-20 10:53:31,398 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:53:40,698 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:58:12,491 Server on port 9797
+[INFO] 2018-02-20 10:58:15,155 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:58:20,318 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 10:58:34,944 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 10:58:39,547 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:04:40,012 Server on port 9797
+[INFO] 2018-02-20 11:04:42,516 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:04:47,391 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:04:58,519 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:05:02,473 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:08:16,811 Server on port 9797
+[INFO] 2018-02-20 11:08:20,237 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:08:25,250 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:09:41,323 Server on port 9797
+[INFO] 2018-02-20 11:09:43,134 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:09:48,047 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:10:40,900 Server on port 9797
+[INFO] 2018-02-20 11:10:42,965 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:10:46,938 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:18:04,667 Server on port 9797
+[INFO] 2018-02-20 11:18:05,537 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:18:11,256 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:27:12,836 Server on port 9797
+[INFO] 2018-02-20 11:27:13,858 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:27:20,210 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:29:07,719 Server on port 9797
+[INFO] 2018-02-20 11:29:10,077 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:29:15,384 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:34:21,798 Server on port 9797
+[INFO] 2018-02-20 11:34:25,359 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:34:30,260 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:55:51,653 Server on port 9797
+[INFO] 2018-02-20 11:55:53,145 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:55:56,782 User Login Info = ('n', (False, 'Guillemro'))
+[INFO] 2018-02-20 11:56:01,588 User Login Info = ('n', (False, 'Guillermoq'))
+[INFO] 2018-02-20 11:56:06,261 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:56:22,502 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:56:24,153 User Login Info = ('n', (True, 'q'))
+[INFO] 2018-02-20 11:57:43,756 Server on port 9797
+[INFO] 2018-02-20 11:57:44,882 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:57:49,828 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 11:59:25,937 Server on port 9797
+[INFO] 2018-02-20 11:59:30,500 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 11:59:34,636 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 12:01:43,886 Server on port 9797
+[INFO] 2018-02-20 12:01:44,770 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 12:01:48,710 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 12:02:54,427 Server on port 9797
+[INFO] 2018-02-20 12:02:55,593 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 12:03:00,607 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-20 12:03:33,798 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-20 12:03:38,382 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:10:13,183 Server on port 9797
+[INFO] 2018-02-21 09:10:14,400 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:10:18,518 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:12:15,611 Server on port 9797
+[INFO] 2018-02-21 09:12:20,148 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:12:25,012 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:15:33,553 Server on port 9797
+[INFO] 2018-02-21 09:15:36,468 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:15:40,464 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:16:49,144 Server on port 9797
+[INFO] 2018-02-21 09:16:50,127 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:16:55,127 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:17:45,864 Server on port 9797
+[INFO] 2018-02-21 09:17:49,729 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:17:53,344 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:22:44,815 Server on port 9797
+[INFO] 2018-02-21 09:22:47,323 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:22:54,943 User Login Info = None
+[INFO] 2018-02-21 09:23:36,187 Server on port 9797
+[INFO] 2018-02-21 09:23:39,531 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:23:48,967 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:28:52,776 Server on port 9797
+[INFO] 2018-02-21 09:28:53,707 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:28:58,488 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:30:53,759 Server on port 9797
+[INFO] 2018-02-21 09:30:55,864 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:31:11,195 Server on port 9797
+[INFO] 2018-02-21 09:31:15,851 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:32:17,791 Server on port 9797
+[INFO] 2018-02-21 09:32:19,277 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:33:01,166 Server on port 9797
+[INFO] 2018-02-21 09:33:04,246 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:33:08,386 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:34:13,511 Server on port 9797
+[INFO] 2018-02-21 09:34:15,816 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:34:19,908 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:39:31,780 Server on port 9797
+[INFO] 2018-02-21 09:52:12,301 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:52:17,518 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:53:27,889 Server on port 9797
+[INFO] 2018-02-21 09:53:30,876 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:53:34,418 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:55:34,861 Server on port 9797
+[INFO] 2018-02-21 09:55:36,996 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:55:41,758 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:56:32,666 Server on port 9797
+[INFO] 2018-02-21 09:56:34,720 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:56:38,868 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 09:57:22,826 Server on port 9797
+[INFO] 2018-02-21 09:57:24,484 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 09:57:27,827 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 10:05:08,681 Server on port 9797
+[INFO] 2018-02-21 10:05:12,321 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 10:05:23,572 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 17:11:22,721 Server on port 9797
+[INFO] 2018-02-21 17:11:23,917 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 17:11:35,107 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 17:13:01,520 Server on port 9797
+[INFO] 2018-02-21 17:13:04,098 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 17:13:09,136 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 17:15:17,539 Server on port 9797
+[INFO] 2018-02-21 17:15:18,614 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 17:15:22,792 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 19:05:03,003 Server on port 9797
+[INFO] 2018-02-21 19:05:06,921 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 19:05:13,862 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 19:16:02,109 Server on port 9797
+[INFO] 2018-02-21 19:16:03,876 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 19:16:07,365 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-21 19:19:34,595 Server on port 9797
+[INFO] 2018-02-21 19:19:56,827 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 19:23:54,730 Server on port 9797
+[INFO] 2018-02-21 19:23:56,900 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 19:29:54,159 Server on port 9797
+[INFO] 2018-02-21 19:29:55,996 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-21 19:30:03,101 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-22 11:14:14,329 Server on port 9797
+[INFO] 2018-02-22 11:14:21,987 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:14:26,922 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-22 11:14:47,762 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:14:52,948 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-22 11:15:13,264 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:15:17,494 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-22 11:16:53,635 Server on port 9797
+[INFO] 2018-02-22 11:16:56,101 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:17:00,034 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-22 11:17:07,407 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:17:11,457 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-02-22 11:17:21,411 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:17:23,566 User Login Info = ('n', (True, 'q'))
+[INFO] 2018-02-22 11:17:34,166 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:17:36,393 User Login Info = ('n', (True, 'q'))
+[INFO] 2018-02-22 11:17:43,841 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-02-22 11:17:45,831 User Login Info = ('n', (True, 'q'))

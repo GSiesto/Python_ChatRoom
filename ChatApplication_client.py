@@ -34,17 +34,22 @@ grant = 1               # 0 = Superuser ; 1 = Normaluser
 connected = False       # For wxiting the thread
 buffer_size = 12800
 
+##
+# Lock
+lock = threading.RLock()
+
 
 ##
 # Send a general message to the common room
 def send_message(sock, server_ip):
     global connected
     try:
-        while True:
+        while connected:
             message = raw_input()
-            sock.sendall(message)
+            with lock:
+                sock.sendall(message)
+        print "\Sending finished"
     except ():
-        # ^C Control
         print "] Forced exit when sending message"
         connected = False
         print "} ESTATE of connected:" + format(connected)
@@ -56,20 +61,18 @@ def send_message(sock, server_ip):
 def receive_message(sock, server_ip):
     global connected
     try:
-        while True:
+        while connected:
             message = sock.recv(buffer_size)
             if (message.startswith(">")):
                 print "] Command received"
-                check_command(sock, message)
-                stdout.flush()      # Clean
+                with lock:
+                    check_command(sock, message)
             else:
                 if (free):
                     print message
-                    stdout.flush()  # Clean
-                else:
-                    stdout.flush()  # Clean
+        print "\Receiving finished"
+        stdout.flush()
     except ():
-        # ^C Control
         print "] Forced exit when receiving message"
         connected = False
         print "} ESTATE of connected:" + format(connected)
@@ -114,48 +117,53 @@ def check_command(sock, message):
 
 
 def exit():
-    print "] Exit function"
-    global connected
-    connected = False
-    print "} ESTATE of connected:" + format(connected)
-    stdout.flush()
-    os._exit(1)
+    try:
+        print "] Exit function"
+        print "} ESTATE of connected:" + format(connected)
+    except (SystemExit, SystemError):
+        print "] Forced exit because of (SystemExit) or (SystemError)"
+    # os._exit(1)
 
 
 ##
 # Main
 def main(argv):
-    server_ip = argv[1]
-    server_port = int(argv[2])
-
-    sock = socket(AF_INET, SOCK_STREAM)
-
-    sock.connect((server_ip, server_port))
-    global connected
-    connected = True
-    print "} ESTATE of connected:" + format(connected)
-
-    # ============== 2 Active Threads
-    # THREADIND
-    # Thread for Sendind
-    sending_t = threading.Thread(target=send_message, args=(sock, server_ip))
-    sending_t.daemon = True
-    sending_t.start()
-    # Thread for Receiving
-    receiving_t = threading.Thread(target=receive_message, args=(sock, server_ip))
-    receiving_t.daemon = True
-    receiving_t.start()
-
     try:
-        while True:
-            if (not connected):
-                print "] Exit because disconnection"
-                exit()
-    except (KeyboardInterrupt, SystemExit):
+        server_ip = argv[1]
+        server_port = int(argv[2])
+
+        sock = socket(AF_INET, SOCK_STREAM)
+
+        sock.connect((server_ip, server_port))
+
+        global connected
+        connected = True
+        print "} ESTATE of connected:" + format(connected)
+
+        # ============== 2 Active Threads
+        # Thread for Sendind
+        sending_t = threading.Thread(target=send_message, args=(sock, server_ip))
+        # sending_t.daemon = True
+        sending_t.start()
+
+        # Thread for Receiving
+        receiving_t = threading.Thread(target=receive_message, args=(sock, server_ip))
+        # receiving_t.daemon = True
+        receiving_t.start()
+
+        sending_t.join()
+        receiving_t.join()
+
+        with lock:
+            sock.close()
+
+        exit()
+
+    except (KeyboardInterrupt):     # ^C Control
+        print "] Forced exit by (KeyboardInterrupt) exception"
         stdout.flush()
-        print "] Forced exit by (KeyboardInterrupt or SystemExit) exception"
         logging.info(
-            "] Forced exit by (KeyboardInterrupt or SystemExit) exception")
+            "] Forced exit by (KeyboardInterrupt) exception")
 
 
 main(argv)

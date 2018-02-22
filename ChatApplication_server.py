@@ -22,7 +22,7 @@ import socket
 from sys import argv, stdout
 import os   # For exiting of every thread
 import re
-from threading import Thread    # Threading
+import threading        # Threading
 
 ##
 # Configuration of the log file
@@ -42,6 +42,9 @@ active_connections = []     # User connected. [[username, grant, socket], ...
 inactive_connections = []   # User inactive. [[username, grant, socket], ...
 kick_connections = []       # Kicked users. [[username, grant, socket], ...
 
+##
+# lock
+lock = threading.RLock()
 
 ##
 # First iteration between the client and the server.
@@ -165,7 +168,7 @@ def ask_credentials(client_sock):
             ask_credentials(client_sock)
     except ():
         print "] Exception while asking credentials"
-        client_sock.close()
+        client_exit(client_sock)
         print "\nSever down ==================\n"
         os._exit(1)
 
@@ -256,13 +259,17 @@ def client_exit(client_sock):
     print "\n]-----------------------------------------\n\n"
     print "] Disconnecting: " + format(active_connections[get_socket_index(client_sock)])
     client_sock.sendall("<Server>: You are going to be disconnected by the server")
-    client_sock.sendall(">disconnect")
     stdout.flush()
+    with lock:
+        client_sock.sendall(">disconnect")
 
-    inactive_connections.append(active_connections[get_socket_index(client_sock)])
-    active_connections.pop(get_socket_index(client_sock))
+    with lock:
+        inactive_connections.append(active_connections[get_socket_index(client_sock)])
+        active_connections.pop(get_socket_index(client_sock))
 
-    client_sock.close()
+    print "\n\n]---------ALL ACTIVE CONNECTIONS:---------\n"
+    print format(active_connections)
+    print "\n]-----------------------------------------\n\n"
 
 
 def clients_exit(client_sock):
@@ -457,7 +464,7 @@ def main(argv):
             stdout.flush()      # Clean
 
             # THREADIND
-            server_t = Thread(target=connect_client, args=(client_connection, addr))
+            server_t = threading.Thread(target=connect_client, args=(client_connection, addr))
             server_t.start()
 
     except (KeyboardInterrupt, SystemExit):
