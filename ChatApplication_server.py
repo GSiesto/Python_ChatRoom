@@ -23,6 +23,12 @@ from sys import argv, stdout
 import os   # For exiting of every thread
 import re
 import threading        # Threading
+import string
+import random
+from pyftpdlib.authorizers import DummyAuthorizer   # FileTranferProtocol
+from pyftpdlib.handlers import FTPHandler
+from pyftpdlib.servers import FTPServer
+import glob     # For viewing files in a path
 
 ##
 # Configuration of the log file
@@ -60,78 +66,44 @@ def connect_client(client_sock, client_ip_and_port):
     client_sock.sendall('Connecting...\n')
     print '] A client [{}] is trying to connect...'.format(client_ip_and_port)
     client_ip = client_ip_and_port[0]
-    client_port = client_ip_and_port[1]
-
-    # if (not kick_connections.has_key(client_ip)):
-    #     kick_connections[client_ip] = []
 
     credential_response = ask_credentials(client_sock)
+
+    if (not credential_response[1][0]):
+        ask_credentials()
 
     logging.info("User Login Info = {}".format(credential_response))
 
     user_name = credential_response[1][1]
-    # same i think - user_name = user_name[1]
 
-    if (credential_response[0] == 'y'):
+    if (credential_response[0] == 'y'):     # REGISTER
         if (credential_response[1][0]):
-            print '] USER:%s with IP:%s has join the room for the first time' %(credential_response[1][1], client_ip)
+            print '] USER:%s with IP:%s has join the room for the first time' % (credential_response[1][1], client_ip)
             client_sock.sendall('<Server>: You have entered the room')
             client_sock.sendall('================== < > ==================')
             # Add to the active user list
             user_data = [user_name, 1, client_sock]
-            active_connections.append(user_data)
-
-            try:
-                while (get_socket_index(client_sock) != -1):    # While exists
-                    message = client_sock.recv(buffer_size)
-                    msg = message
-                    check_message(client_sock, user_name, msg)
-            except ():
-                print "] Exception when receiving on register"
-                client_exit(client_sock)
-                print "\nSever down ==================\n"
-                os._exit(1)
-
+            with lock:
+                active_connections.append(user_data)
+            # Loop
+            open_connection(client_sock, user_name, 'l')
         else:
             print "ERROR 1 -> The username CAN'T exist in the database, try again"
             client_sock.sendall("<Server>: ERROR 1 -> The username CAN'T exist in the database, try again")
             connect_client(client_sock, client_ip_and_port)
 
-    elif (credential_response[0] == 'n'):
+    elif (credential_response[0] == 'n'):   # LOGIN
         if (credential_response[1][0]):
             print '] USER:%s with IP:%s has join the room' %(credential_response[1][1], client_ip)
             client_sock.sendall('<Server>: Welcome back {} \n'.format(credential_response[1][1]))
             client_sock.sendall('================== < > ==================')
 
-            with open('database/users_credentials.txt', 'r') as rDoc:
-                database_doc_list = rDoc.readlines()
-            database_doc_list = map(
-                                    lambda each: each.strip("\n"),
-                                    database_doc_list)  # Eliminate '\n'
-
-            grant = -1
-            i = 0
-            while ((i < len(database_doc_list)) and (grant < 0)):   # Working
-                sublist = re.split('[;#]', database_doc_list[i])
-                if (user_name == sublist[0]):
-                    grant = sublist[2]
-                i = i + 1
-            rDoc.close()        # Closing document
-
             # Add to the active user list
-            user_data = [user_name, grant, client_sock]
-            active_connections.append(user_data)
-
-            try:
-                while (get_socket_index(client_sock) != -1):    # While exists
-                    message = client_sock.recv(buffer_size)
-                    msg = message
-                    check_message(client_sock, user_name, msg)
-            except ():
-                print "] Exception when receiving on login"
-                client_exit(client_sock)
-                print "\nSever down ==================\n"
-                os._exit(1)
+            user_data = [user_name, get_user_grant(user_name), client_sock]
+            with lock:
+                active_connections.append(user_data)
+            # Loop
+            open_connection(client_sock, user_name, 'r')
         else:
             print "ERROR 2 -> The credentials are incorrect"
             client_sock.sendall("<Server>: ERROR 2 -> The credentials are incorrect")
@@ -141,6 +113,24 @@ def connect_client(client_sock, client_ip_and_port):
         print '] USER:%s with IP:%s has problems trying to connect. Please try again' %(credential_response[1][1], client_ip)
         client_sock.sendall('<Server>: You had problems to connect. Please try again')
         connect_client(client_sock, client_ip_and_port)
+
+
+##
+# Semi-infinite loop with the soket waiting to comunicate client and server
+def open_connection(client_sock, user_name, direction):
+    try:
+        while (get_socket_index(client_sock) != -1):    # While exists
+            message = client_sock.recv(buffer_size)
+            msg = message
+            check_message(client_sock, user_name, msg)
+    except ():
+        if direction == 'r':
+            print "] Exception when receiving on REGISTER"
+        else:
+            print "] Exception when reciving on LOGIN"
+        client_exit(client_sock)
+        print "\nSever down ==================\n"
+        os._exit(1)
 
 
 ##
@@ -190,30 +180,97 @@ def create_user(client_sock):
     client_sock.sendall('<Server>: (3/3) Write your password:')
     user_password_2 = client_sock.recv(buffer_size)
 
-    answer = (False, user_name)
 
     with open('database/users_credentials.txt', 'r') as rDoc:
         database_doc_list = rDoc.readlines()
-    database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)   # Eliminate '\n' from our list
+    rDoc.close()
+    answer = (False, user_name)
+    if (not(user_name in database_doc_list)):
+        if ((user_password == user_password_2)):    # 2 in asswords math?
+            if (check_password(user_name, user_password)):  # math in database?
+                with open('database/users_credentials.txt', 'a') as aDoc:
+                    aDoc.write('\n' + user_name + ';' + user_password + '#' + format(1))
+                    # TODO encrypt password
 
-    if (not(user_name == "admin") or not(user_name in database_doc_list)):
-        if (user_password == user_password_2):
-            with open('database/users_credentials.txt', 'a') as aDoc:
-                aDoc.write('\n' + user_name + ';' + user_password + '#' + format(1)) #TODO encrypt password
-
-            print '] %s Has join the party.\n' % user_name
-            answer = (True, user_name)
+                print '] %s Has join the party.\n' % user_name
+                answer = (True, user_name)
+            else:
+                client_sock.sendall('<Server>: The password is incorrect')
+                answer = (False, user_name)
         else:
             client_sock.sendall('<Server>: The password are not the same, please try again')
             answer = (False, user_name)
-            ask_credentials(client_sock)
     else:
         client_sock.sendall('<Server>: You must choose another username')
         answer = (False, user_name)
-        ask_credentials(client_sock)
-
-    aDoc.close()    # Close document
     return answer
+
+
+##
+# Check is the password introduced as parameter math with the user and
+# password in the database doc
+def check_password(user_name, password):
+    answer = False
+    salir = False
+    with open('database/users_credentials.txt', 'r') as rDoc:
+        database_doc_list = rDoc.readlines()
+    # Eliminate '\n' from our list
+    database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)
+
+    i = 0
+    while (i < len(database_doc_list) and (not salir)):   # Working
+        sublist = re.split('[;#]', database_doc_list[i])
+        if (user_name == sublist[0]):
+            if (password == sublist[1]):
+                answer = True
+            else:
+                salir = True
+        i = i + 1
+
+    rDoc.close()    # Close document
+    return answer
+
+
+##
+#
+def id_generator(size=9, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+##
+#
+def file_transfer(client_sock, message, direction):
+    client_sock.sendall("] Introduce your password to continue:")
+    password = client_sock.recv(buffer_size)
+    user_name = active_connections[get_socket_index(client_sock)][0]
+
+    if (check_password(user_name, password)[0]):
+
+        authorizer = DummyAuthorizer()
+        authorizer.add_user(user_name, password, "files", perm="elradfmw")
+
+        handler = FTPHandler
+        handler.authorizer = authorizer
+
+        server = FTPServer(("localhost", 9797), handler)
+        server.serve_forever()
+
+        if (direction == 'u'):
+            client_sock.sendall(">uploadfile")
+        else:
+            client_sock.sendall(">downloadfile")
+    else:
+        print "] Error 5 -> Incorrect password"
+
+
+##
+#
+def view_files(client_sock):
+    list = glob.glob("files/*.*")
+    client_sock.sendall("\n".join([str(x) for x in list]))
+    print "************** FILES ****************"
+    print "\n".join([str(x) for x in list])
+    print "**************       ****************"
 
 
 ##
@@ -345,6 +402,12 @@ def check_command(client_sock, user_name, message):
     elif msg.startswith("/disconnect"):
         print "] %s solicit /disconnect" % user_name
         client_exit(client_sock)
+    elif msg.startswith("/uploadfile"):
+        file_transfer(client_sock, message, 'u')
+    elif msg.startswith("/downloadfile"):
+        file_transfer(client_sock, message, 'd')
+    elif msg.startswith("/viewfiles"):
+        view_files(client_sock)
     elif msg.startswith("/help"):
         print "] %s solicit /help" % user_name
         client_sock.sendall("You can type:\n /viewusers\n /messageto\n /changepassword\n /busy\n /free\n /changegrant\n /kickuser\n /viewkickusers\n /restart\n /senddata\n /disconnect")
@@ -389,6 +452,23 @@ def kick_user(client_sock, message):
 def change_grant(client_sock, user_name, message):
     client_sock.sendall(message)
     # TODO añadir grant al archivo de texto
+
+
+def get_user_grant(user_name):
+    with open('database/users_credentials.txt', 'r') as rDoc:
+        database_doc_list = rDoc.readlines()
+    database_doc_list = map(
+                            lambda each: each.strip("\n"),
+                            database_doc_list)  # Eliminate '\n'
+    grant = -1
+    i = 0
+    while ((i < len(database_doc_list)) and (grant < 0)):   # Working
+        sublist = re.split('[;#]', database_doc_list[i])
+        if (user_name == sublist[0]):
+            grant = sublist[2]
+        i = i + 1
+    rDoc.close()        # Closing document
+    return grant
 
 
 ##

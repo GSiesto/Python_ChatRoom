@@ -20,6 +20,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv, stdout
 import os           # For exiting of every thread
 import threading    # Threading
+from ftplib import FTP
 
 ##
 # Config
@@ -33,15 +34,18 @@ free = True
 grant = 1               # 0 = Superuser ; 1 = Normaluser
 connected = False       # For wxiting the thread
 buffer_size = 12800
+server_ip = "localhost"
+server_port = 9797
 
 ##
 # Lock
 lock = threading.RLock()
 
 
+
 ##
 # Send a general message to the common room
-def send_message(sock, server_ip):
+def send_message(sock):
     global connected
     try:
         while connected:
@@ -58,7 +62,7 @@ def send_message(sock, server_ip):
 
 ##
 # Receive a message thought the socket and process it
-def receive_message(sock, server_ip):
+def receive_message(sock):
     global connected
     try:
         while connected:
@@ -70,14 +74,65 @@ def receive_message(sock, server_ip):
             else:
                 if (free):
                     print message
+            stdout.flush()
         print "\Receiving finished"
-        stdout.flush()
+
     except ():
         print "] Forced exit when receiving message"
         connected = False
         print "} ESTATE of connected:" + format(connected)
         exit()
 
+
+def transfer_file(message, direction):
+    output_path = 'files'
+    try:
+        ftp = FTP('')
+        global server_ip
+        global server_port
+        ftp.connect(server_ip, server_port)
+        ftp.login()
+        ftp.cwd(output_path)    # Output irectory
+        ftp.retrlines('LIST')
+
+        if (direction == 'u'):
+            upload_file(protocol=ftp, location=message)
+        else:
+            download_file(protocol=ftp, name=message)
+
+    except ():
+        print "] Forced exit in transfer_file()"
+        connected = False
+        print "} ESTATE of connected:" + format(connected)
+        exit()
+
+
+def upload_file(protocol, path2file):
+    input_path = location
+    try:
+        file = open(input_path, 'rb')
+        protocol.storbinary('STOR '+input_path, file)
+        print "] STORING the file: " + input_path
+        protocol.quit()
+        file.close()
+    except():
+        print "] Forced exit in upload_file()"
+        connected = False
+        print "} ESTATE of connected:" + format(connected)
+        exit()
+
+def download_file(protocol, name):
+    try:
+        filename = 'files/%s' % (name)   # Path of file
+        localfile = open(filename, 'wb')
+        protocol.retrbinary('RETR ' + filename, localfile.write, 1024)
+        protocol.quit()
+        localfile.close()
+    except():
+        print "] Forced exit in dowanload_file()"
+        connected = False
+        print "} ESTATE of connected:" + format(connected)
+        exit()
 
 def check_command(sock, message):
     global connected
@@ -95,6 +150,12 @@ def check_command(sock, message):
             connected = False
             print "} ESTATE of connected:" + format(connected)
             print "] You have been disconnected"
+        elif msg.startwith(">uploadfile"):
+            file_t = threading.Thread(target=transfer_file, args=(msg, 'u')).start()
+            # Maybe Daemon
+        elif msg.startwith(">downloadfile"):
+            file_t = threading.Thread(target=transfer_file, args=(msg, 'd')).start()
+            # Maybe Daemon
         elif msg.startswith(">busy"):
             print "] You declared yourself as: Busy"
             free = False
@@ -129,6 +190,8 @@ def exit():
 # Main
 def main(argv):
     try:
+        global server_ip
+        global server_port
         server_ip = argv[1]
         server_port = int(argv[2])
 
@@ -142,12 +205,12 @@ def main(argv):
 
         # ============== 2 Active Threads
         # Thread for Sendind
-        sending_t = threading.Thread(target=send_message, args=(sock, server_ip))
+        sending_t = threading.Thread(target=send_message, args=(sock,))
         # sending_t.daemon = True
         sending_t.start()
 
         # Thread for Receiving
-        receiving_t = threading.Thread(target=receive_message, args=(sock, server_ip))
+        receiving_t = threading.Thread(target=receive_message, args=(sock,))
         # receiving_t.daemon = True
         receiving_t.start()
 
