@@ -52,6 +52,7 @@ kick_connections = []       # Kicked users. [[username, grant, socket], ...
 # lock
 lock = threading.RLock()
 
+
 ##
 # First iteration between the client and the server.
 # The server will ask for the credentials of the user identifiying if it needs
@@ -68,9 +69,6 @@ def connect_client(client_sock, client_ip_and_port):
     client_ip = client_ip_and_port[0]
 
     credential_response = ask_credentials(client_sock)
-
-    if (not credential_response[1][0]):
-        ask_credentials()
 
     logging.info("User Login Info = {}".format(credential_response))
 
@@ -180,23 +178,18 @@ def create_user(client_sock):
     client_sock.sendall('<Server>: (3/3) Write your password:')
     user_password_2 = client_sock.recv(buffer_size)
 
-
     with open('database/users_credentials.txt', 'r') as rDoc:
         database_doc_list = rDoc.readlines()
     rDoc.close()
     answer = (False, user_name)
     if (not(user_name in database_doc_list)):
-        if ((user_password == user_password_2)):    # 2 in asswords math?
-            if (check_password(user_name, user_password)):  # math in database?
-                with open('database/users_credentials.txt', 'a') as aDoc:
-                    aDoc.write('\n' + user_name + ';' + user_password + '#' + format(1))
-                    # TODO encrypt password
+        if ((user_password == user_password_2)):    # 2 passwords math?
+            with open('database/users_credentials.txt', 'a') as aDoc:
+                aDoc.write('\n' + user_name + ';' + user_password + '#' + format(1))
+                # TODO encrypt password
 
-                print '] %s Has join the party.\n' % user_name
-                answer = (True, user_name)
-            else:
-                client_sock.sendall('<Server>: The password is incorrect')
-                answer = (False, user_name)
+            print '] %s Has join the party.\n' % user_name
+            answer = (True, user_name)
         else:
             client_sock.sendall('<Server>: The password are not the same, please try again')
             answer = (False, user_name)
