@@ -150,10 +150,10 @@ def check_command(sock, message):
             connected = False
             print "} ESTATE of connected:" + format(connected)
             print "] You have been disconnected"
-        elif msg.startwith(">uploadfile"):
+        elif msg.startswith(">uploadfile"):
             file_t = threading.Thread(target=transfer_file, args=(msg, 'u')).start()
             # Maybe Daemon
-        elif msg.startwith(">downloadfile"):
+        elif msg.startswith(">downloadfile"):
             file_t = threading.Thread(target=transfer_file, args=(msg, 'd')).start()
             # Maybe Daemon
         elif msg.startswith(">busy"):

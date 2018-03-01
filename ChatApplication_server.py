@@ -43,6 +43,7 @@ logging.basicConfig(level=logging.INFO,
 host = '127.0.0.1'
 buffer_size = 12800
 n_connection = 100          # Number of possible connection
+ftp_password = "ftpadmin"
 
 active_connections = []     # User connected. [[username, grant, socket], ...
 inactive_connections = []   # User inactive. [[username, grant, socket], ...
@@ -233,27 +234,24 @@ def id_generator(size=9, chars=string.ascii_uppercase + string.digits):
 ##
 #
 def file_transfer(client_sock, message, direction):
-    client_sock.sendall("] Introduce your password to continue:")
-    password = client_sock.recv(buffer_size)
+
     user_name = active_connections[get_socket_index(client_sock)][0]
 
-    if (check_password(user_name, password)[0]):
+    authorizer = DummyAuthorizer()
+    authorizer.add_user(user_name, ftp_password, "files_client/%s" % (user_name), perm="elradfmw")
 
-        authorizer = DummyAuthorizer()
-        authorizer.add_user(user_name, password, "files", perm="elradfmw")
+    handler = FTPHandler
+    handler.authorizer = authorizer
 
-        handler = FTPHandler
-        handler.authorizer = authorizer
+    server = FTPServer(("localhost", 9797), handler)
+    server.serve_forever()
 
-        server = FTPServer(("localhost", 9797), handler)
-        server.serve_forever()
-
-        if (direction == 'u'):
-            client_sock.sendall(">uploadfile")
-        else:
-            client_sock.sendall(">downloadfile")
+    if (direction == 'u'):
+        client_sock.sendall(">uploadfile")
     else:
-        print "] Error 5 -> Incorrect password"
+        client_sock.sendall(">downloadfile")
+
+
 
 
 ##
@@ -415,10 +413,10 @@ def message_to(client_sock, message):
 
     if (index != -1):
         del sublist[0]      # Remove command
-        print "LA SUBLIST HA QUEDADO:" + sublist
-        active_connections[index][2].sendall("PM from: " + sublist[0])
+        print ' '.join(sublist)
+        active_connections[index][2].sendall("] PM from: " + sublist[0] + "\n] <Message>")
         del sublist[0]      # Remove user_name
-        active_connections[index][2].sendall(''.join(sublist))
+        active_connections[index][2].sendall(' '.join(sublist) + "\n] <End of message>")
     else:
         client_sock.sendall("Error 3 -> User not found")
 
@@ -443,8 +441,15 @@ def kick_user(client_sock, message):
 
 
 def change_grant(client_sock, user_name, message):
-    client_sock.sendall(message)
-    # TODO añadir grant al archivo de texto
+    # message = command + " " + user_targer + " " + grant
+    possible = False
+    if (get_user_grant(user_name) == 0):    # If the solicitor is superuser
+        msg_splited = re.split('[" "]', message)
+        possible = set_user_grant(msg_splited[1], msg_splited[2])
+        client_sock.sendall(msg_splited[0] + " " + msg_splited[2])
+    else:
+        client_sock.sendall("] You have no grant to make that operation")
+    return possible
 
 
 def get_user_grant(user_name):
@@ -458,10 +463,43 @@ def get_user_grant(user_name):
     while ((i < len(database_doc_list)) and (grant < 0)):   # Working
         sublist = re.split('[;#]', database_doc_list[i])
         if (user_name == sublist[0]):
-            grant = sublist[2]
+            grant = int(sublist[2])
         i = i + 1
     rDoc.close()        # Closing document
+    print "GRANT: " + format(grant)
     return grant
+
+def set_user_grant(user_name, new_grant):
+    # READING
+    with open('database/users_credentials.txt', 'r') as rDoc:
+        database_doc_list = rDoc.readlines()
+    database_doc_list = map(
+                            lambda each: each.strip("\n"),
+                            database_doc_list)  # Eliminate '\n'
+    found = False
+    i = 0
+    index_parent_list = 0
+    while ((i < len(database_doc_list)) and (not found)):   # Working
+        sublist = re.split('[;#]', database_doc_list[i])
+        if (user_name == sublist[0]):
+            index_parent_list = i
+            found = True
+            user_data = [user_name, sublist[1], new_grant]
+        i = i + 1
+    rDoc.close()        # Closing document
+
+    # WRITING If found
+    if (found):
+        # Delete line
+        database_doc_list.append('\n' + user_data[0] + ';' + user_data[1] + '#' + user_data[2])
+        # Add line
+        database_doc_list.pop(index_parent_list)
+        wDoc = open("database/users_credentials.txt", "w")
+        for line in database_doc_list:
+            wDoc.write(line + "\n")       # Rewrite again all the list minus target
+        wDoc.close()
+
+    return found    # Know if find
 
 
 ##
