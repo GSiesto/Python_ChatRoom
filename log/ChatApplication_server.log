@@ -1610,3 +1610,6 @@
 [INFO] 2018-03-01 18:38:54,693 User Login Info = ('n', (True, 'q'))
 [INFO] 2018-03-01 18:38:56,735 Chat Client Connected on IP 127.0.0.1 & Port 9797
 [INFO] 2018-03-01 18:39:00,040 User Login Info = ('n', (True, 'Guillermo'))
+[INFO] 2018-03-10 15:49:45,582 Server on port 9797
+[INFO] 2018-03-10 15:49:46,829 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-10 15:49:49,189 User Login Info = ('n', (True, 'q'))

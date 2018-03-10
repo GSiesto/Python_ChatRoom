@@ -199,7 +199,6 @@ def create_user(client_sock):
         answer = (False, user_name)
     return answer
 
-
 ##
 # Check is the password introduced as parameter math with the user and
 # password in the database doc
