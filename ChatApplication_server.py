@@ -217,13 +217,15 @@ def encrypt_txt(p_text):
 def decrypt_list(p_list):
     print ("Decrypting [0%]")
     d_list = []
-    for i in range(0, len(p_list)):
+    i = 0
+    for elements in p_list:
+        print "Vamos a: " + format(p_list[i])
         if (p_list[i] != '\n'):
             d_list.append(decrypt("GSS", p_list[i]))
+        i = i + 1
     print ("Decrypting [100%]")
     print "LISTA:" + format(d_list)
     return d_list
-
 
 ##
 # Check is the password introduced as parameter math with the user and
