@@ -180,19 +180,19 @@ def create_user(client_sock):
     client_sock.sendall('<Server>: (3/3) Write your password:')
     user_password_2 = client_sock.recv(buffer_size)
 
-    with open('database/users_credentials.txt', 'r') as rDoc:
-        database_doc_list = decrypt_list(rDoc.readlines())
+    with open('database/users_credentials.enc', 'r') as rDoc:
+        database_doc_list = decrypt_list(rDoc.read().split("+$&$&+"))
     rDoc.close()
 
     answer = (False, user_name)
     if (not(user_name in database_doc_list)):
         if ((user_password == user_password_2)):    # 2 passwords math?
-            with open('database/users_credentials.txt', 'a') as aDoc:
+            with open('database/users_credentials.enc', 'a') as aDoc:
                 if (user_name == "Guille"):    # Default admin
                     ciphertext = encrypt_txt(user_name + ';' + user_password + '#' + format(0))
                 else:
                     ciphertext = encrypt_txt(user_name + ';' + user_password + '#' + format(1))
-                aDoc.write('\n' + ciphertext)
+                aDoc.write(ciphertext + "+$&$&+")
             aDoc.close()
 
             print '] %s Has join the party.\n' % user_name
@@ -218,11 +218,12 @@ def encrypt_txt(p_text):
 ##
 # Decrypt list
 def decrypt_list(p_list):
+    print "Encrypted list: " + format(p_list)
     print ("Decrypting [0%]")
     d_list = []
     i = 0
-    while i < len(p_list):
-        if (p_list[i] != '\n'):     # If it's not an empty line in the doc
+    while (i < len(p_list) and p_list[i] != ''):
+        if (p_list[i] != '\n' or p_list[i] != ''):     # If it's not an empty line in the doc
             print "Let's append: " + format(p_list[i])
             print "No encrypt: " + format(decrypt("GSS", p_list[i]))
             d_list.append(decrypt("GSS", p_list[i]))
@@ -237,8 +238,8 @@ def decrypt_list(p_list):
 def check_password(user_name, password):
     answer = False
     salir = False
-    with open('database/users_credentials.txt', 'r') as rDoc:
-        database_doc_list = decrypt_list(rDoc.readlines())
+    with open('database/users_credentials.enc', 'r') as rDoc:
+        database_doc_list = decrypt_list(rDoc.read().split("+$&$&+"))
     rDoc.close()    # Close document
     # Eliminate '\n' from our list
     #database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)
@@ -274,9 +275,9 @@ def login_user(client_sock):
 
     answer = (False, user_name)
 
-    with open('database/users_credentials.txt', 'r') as rDoc:
-        database_doc_list = decrypt_list(rDoc.readlines())
-        print "ENCRYPTED:" + format(rDoc.readlines())
+    with open('database/users_credentials.enc', 'r') as rDoc:
+        database_doc_list = decrypt_list(rDoc.read().split("+$&$&+"))
+        print "ENCRYPTED:" + format(rDoc.read().split("+$&$&+"))
     rDoc.close()    # Close the document
 
     print "DESENCRYPTED:" + format(database_doc_list)
@@ -440,8 +441,8 @@ def change_grant(client_sock, user_name, message):
 
 def get_user_grant(user_name):
     print "] Get_user_grant"
-    with open('database/users_credentials.txt', 'r') as rDoc:
-        database_doc_list = decrypt_list(rDoc.readlines())
+    with open('database/users_credentials.enc', 'r') as rDoc:
+        database_doc_list = decrypt_list(rDoc.read().split("+$&$&+"))
     rDoc.close()        # Closing document
 
     #database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)  # Eliminate '\n'
@@ -458,8 +459,8 @@ def get_user_grant(user_name):
 def set_user_grant(user_name, new_grant):
     print "] Get_user_grant"
     # READING
-    with open('database/users_credentials.txt', 'r') as rDoc:
-        database_doc_list = decrypt_list(rDoc.readlines())
+    with open('database/users_credentials.enc', 'r') as rDoc:
+        database_doc_list = decrypt_list(rDoc.read().split("+$&$&+"))
     rDoc.close()        # Closing document
 
     #database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)  # Eliminate '\n'
@@ -476,14 +477,14 @@ def set_user_grant(user_name, new_grant):
 
     # WRITING If found
     if (found):
-        # Delete line
-        database_doc_list.append('\n' + user_data[0] + ';' + user_data[1] + '#' + user_data[2])
+        # Delete line   #TODO TODO TODO \n
+        database_doc_list.append(user_data[0] + ';' + user_data[1] + '#' + user_data[2])
         # Add line
         database_doc_list.pop(index_parent_list)
-        with open('database/users_credentials.txt', 'w') as wDoc:
+        with open('database/users_credentials.enc', 'w') as wDoc:
             for line in database_doc_list:
                 ciphertext = encrypt_txt(line)
-                wDoc.write("\n" + ciphertext)
+                wDoc.write(ciphertext + "+$&$&+")
         wDoc.close()
 
     return found    # Know if find
