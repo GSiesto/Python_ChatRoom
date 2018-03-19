@@ -84,56 +84,6 @@ def receive_message(sock):
         exit()
 
 
-def transfer_file(message, direction):
-    output_path = 'files'
-    try:
-        ftp = FTP('')
-        global server_ip
-        global server_port
-        ftp.connect(server_ip, server_port)
-        ftp.login()
-        ftp.cwd(output_path)    # Output irectory
-        ftp.retrlines('LIST')
-
-        if (direction == 'u'):
-            upload_file(protocol=ftp, location=message)
-        else:
-            download_file(protocol=ftp, name=message)
-
-    except ():
-        print "] Forced exit in transfer_file()"
-        connected = False
-        print "} ESTATE of connected:" + format(connected)
-        exit()
-
-
-def upload_file(protocol, path2file):
-    input_path = location
-    try:
-        file = open(input_path, 'rb')
-        protocol.storbinary('STOR '+input_path, file)
-        print "] STORING the file: " + input_path
-        protocol.quit()
-        file.close()
-    except():
-        print "] Forced exit in upload_file()"
-        connected = False
-        print "} ESTATE of connected:" + format(connected)
-        exit()
-
-def download_file(protocol, name):
-    try:
-        filename = 'files/%s' % (name)   # Path of file
-        localfile = open(filename, 'wb')
-        protocol.retrbinary('RETR ' + filename, localfile.write, 1024)
-        protocol.quit()
-        localfile.close()
-    except():
-        print "] Forced exit in dowanload_file()"
-        connected = False
-        print "} ESTATE of connected:" + format(connected)
-        exit()
-
 def check_command(sock, message):
     global connected
     global free
@@ -150,12 +100,6 @@ def check_command(sock, message):
             connected = False
             print "} ESTATE of connected:" + format(connected)
             print "] You have been disconnected"
-        elif msg.startswith(">uploadfile"):
-            file_t = threading.Thread(target=transfer_file, args=(msg, 'u')).start()
-            # Maybe Daemon
-        elif msg.startswith(">downloadfile"):
-            file_t = threading.Thread(target=transfer_file, args=(msg, 'd')).start()
-            # Maybe Daemon
         elif msg.startswith(">busy"):
             print "] You declared yourself as: Busy"
             free = False

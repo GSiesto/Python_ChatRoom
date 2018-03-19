@@ -188,10 +188,13 @@ def create_user(client_sock):
     if (not(user_name in database_doc_list)):
         if ((user_password == user_password_2)):    # 2 passwords math?
             with open('database/users_credentials.txt', 'a') as aDoc:
-                ciphertext = encrypt_txt(user_name + ';' + user_password + '#' + format(1))
+                if (user_name == "Guille"):    # Default admin
+                    ciphertext = encrypt_txt(user_name + ';' + user_password + '#' + format(0))
+                else:
+                    ciphertext = encrypt_txt(user_name + ';' + user_password + '#' + format(1))
                 aDoc.write('\n' + ciphertext)
-
             aDoc.close()
+
             print '] %s Has join the party.\n' % user_name
             answer = (True, user_name)
         else:
@@ -218,9 +221,10 @@ def decrypt_list(p_list):
     print ("Decrypting [0%]")
     d_list = []
     i = 0
-    for elements in p_list:
-        print "Vamos a: " + format(p_list[i])
-        if (p_list[i] != '\n'):
+    while i < len(p_list):
+        if (p_list[i] != '\n'):     # If it's not an empty line in the doc
+            print "Let's append: " + format(p_list[i])
+            print "No encrypt: " + format(decrypt("GSS", p_list[i]))
             d_list.append(decrypt("GSS", p_list[i]))
         i = i + 1
     print ("Decrypting [100%]")
@@ -237,11 +241,13 @@ def check_password(user_name, password):
         database_doc_list = decrypt_list(rDoc.readlines())
     rDoc.close()    # Close document
     # Eliminate '\n' from our list
-    database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)
+    #database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)
 
     i = 0
     while (i < len(database_doc_list) and (not salir)):   # Working
+        print "     LIST DATABASE: " + format(database_doc_list)
         sublist = re.split('[;#]', database_doc_list[i])
+        print "     SUBLIST: " + format(sublist)
         if (user_name == sublist[0]):
             if (password == sublist[1]):
                 answer = True
@@ -250,45 +256,6 @@ def check_password(user_name, password):
         i = i + 1
 
     return answer
-
-
-##
-#
-def id_generator(size=9, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
-
-
-##
-#
-def file_transfer(client_sock, message, direction):
-
-    user_name = active_connections[get_socket_index(client_sock)][0]
-
-    authorizer = DummyAuthorizer()
-    authorizer.add_user(user_name, ftp_password, "files_client/%s" % (user_name), perm="elradfmw")
-
-    handler = FTPHandler
-    handler.authorizer = authorizer
-
-    server = FTPServer(("localhost", 9797), handler)
-    server.serve_forever()
-
-    if (direction == 'u'):
-        client_sock.sendall(">uploadfile")
-    else:
-        client_sock.sendall(">downloadfile")
-
-
-
-
-##
-#
-def view_files(client_sock):
-    list = glob.glob("files/*.*")
-    client_sock.sendall("\n".join([str(x) for x in list]))
-    print "************** FILES ****************"
-    print "\n".join([str(x) for x in list])
-    print "**************       ****************"
 
 
 ##
@@ -308,24 +275,23 @@ def login_user(client_sock):
     answer = (False, user_name)
 
     with open('database/users_credentials.txt', 'r') as rDoc:
-        print "PP:" + format(rDoc.readlines())
         database_doc_list = decrypt_list(rDoc.readlines())
+        print "ENCRYPTED:" + format(rDoc.readlines())
     rDoc.close()    # Close the document
 
-    print "OO:" + format(database_doc_list)
-    database_doc_list = map(lambda each:each.strip("\n"), database_doc_list)    # Eliminate '\n' from our list
+    print "DESENCRYPTED:" + format(database_doc_list)
+    #database_doc_list = map(lambda each:each.strip("\n"), database_doc_list)    # Eliminate '\n' from our list
 
     i = 0
     while (not answer[0] and i < len(database_doc_list)):
-            sublist = re.split('[; #]', database_doc_list[i])   # TODO GOOOD :)
-
-            if ((user_name == "admin") or (user_name == sublist[0])):
-
-                if (user_password == sublist[1]):
-                    answer = (True, user_name)
-            else:
-                answer = (False, user_name)
-            i = i + 1
+        print "     LIST DATABASEp: " + format(database_doc_list)
+        sublist = re.split('[; #]', database_doc_list[i])   # TODO GOOOD :)
+        print "     SUBLISTp: " + format(sublist)
+        if (user_name == sublist[0] and (user_password == sublist[1])):
+            answer = (True, user_name)
+        else:
+            answer = (False, user_name)
+        i = i + 1
 
     return answer
 
@@ -416,18 +382,9 @@ def check_command(client_sock, user_name, message):
     elif msg.startswith("/restart"):
         print "] %s solicit /restart" % user_name
         print "e restart"
-    elif msg.startswith("/senddata"):
-        print "] %s solicit /senddata" % user_name
-        print "e senddata"
     elif msg.startswith("/disconnect"):
         print "] %s solicit /disconnect" % user_name
         client_exit(client_sock)
-    elif msg.startswith("/uploadfile"):
-        file_transfer(client_sock, message, 'u')
-    elif msg.startswith("/downloadfile"):
-        file_transfer(client_sock, message, 'd')
-    elif msg.startswith("/viewfiles"):
-        view_files(client_sock)
     elif msg.startswith("/help"):
         print "] %s solicit /help" % user_name
         client_sock.sendall("You can type:\n /viewusers\n /messageto\n /changepassword\n /busy\n /free\n /changegrant\n /kickuser\n /viewkickusers\n /restart\n /senddata\n /disconnect")
@@ -482,13 +439,12 @@ def change_grant(client_sock, user_name, message):
 
 
 def get_user_grant(user_name):
+    print "] Get_user_grant"
     with open('database/users_credentials.txt', 'r') as rDoc:
         database_doc_list = decrypt_list(rDoc.readlines())
     rDoc.close()        # Closing document
 
-    database_doc_list = map(
-                            lambda each: each.strip("\n"),
-                            database_doc_list)  # Eliminate '\n'
+    #database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)  # Eliminate '\n'
     grant = -1
     i = 0
     while ((i < len(database_doc_list)) and (grant < 0)):   # Working
@@ -500,14 +456,13 @@ def get_user_grant(user_name):
     return grant
 
 def set_user_grant(user_name, new_grant):
+    print "] Get_user_grant"
     # READING
     with open('database/users_credentials.txt', 'r') as rDoc:
         database_doc_list = decrypt_list(rDoc.readlines())
     rDoc.close()        # Closing document
 
-    database_doc_list = map(
-                            lambda each: each.strip("\n"),
-                            database_doc_list)  # Eliminate '\n'
+    #database_doc_list = map(lambda each: each.strip("\n"), database_doc_list)  # Eliminate '\n'
     found = False
     i = 0
     index_parent_list = 0
@@ -528,8 +483,7 @@ def set_user_grant(user_name, new_grant):
         with open('database/users_credentials.txt', 'w') as wDoc:
             for line in database_doc_list:
                 ciphertext = encrypt_txt(line)
-                wDoc.write(ciphertext + "\n")
-
+                wDoc.write("\n" + ciphertext)
         wDoc.close()
 
     return found    # Know if find

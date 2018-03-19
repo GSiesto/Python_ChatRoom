@@ -1766,3 +1766,86 @@
 [INFO] 2018-03-14 09:21:05,955 Server on port 9797
 [INFO] 2018-03-14 09:21:08,657 Chat Client Connected on IP 127.0.0.1 & Port 9797
 [INFO] 2018-03-14 09:21:23,520 User Login Info = ('y', (True, 'Guillermo'))
+[INFO] 2018-03-14 09:29:50,180 Server on port 9797
+[INFO] 2018-03-14 09:29:51,939 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-14 09:29:58,170 User Login Info = ('n', (False, 'Guillermo'))
+[INFO] 2018-03-14 09:30:16,161 User Login Info = ('n', (False, 'Guille'))
+[INFO] 2018-03-14 09:30:33,050 User Login Info = ('n', (False, 'Guillermo'))
+[INFO] 2018-03-16 16:31:20,075 Server on port 9797
+[INFO] 2018-03-16 16:31:20,996 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:35:21,546 Server on port 9797
+[INFO] 2018-03-16 16:35:22,579 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:39:37,225 Server on port 9797
+[INFO] 2018-03-16 16:39:38,998 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:41:01,773 Server on port 9797
+[INFO] 2018-03-16 16:41:04,564 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:41:13,514 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 16:41:36,451 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:41:52,841 User Login Info = ('y', (True, 'Pepe'))
+[INFO] 2018-03-16 16:42:10,984 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:42:17,027 User Login Info = ('n', (False, 'Guille'))
+[INFO] 2018-03-16 16:58:34,353 Server on port 9797
+[INFO] 2018-03-16 16:58:35,224 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:58:44,422 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 16:58:54,236 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:59:08,282 User Login Info = ('y', (True, 'qq'))
+[INFO] 2018-03-16 16:59:27,937 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 16:59:32,358 User Login Info = ('n', (False, 'Guille'))
+[INFO] 2018-03-16 17:02:24,438 Server on port 9797
+[INFO] 2018-03-16 17:02:33,042 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:02:42,081 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 17:02:52,695 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:02:57,096 User Login Info = ('n', (False, 'Guille'))
+[INFO] 2018-03-16 17:03:46,676 User Login Info = ('y', (True, 'qqq'))
+[INFO] 2018-03-16 17:05:45,590 Server on port 9797
+[INFO] 2018-03-16 17:05:48,054 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:05:58,125 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 17:06:07,615 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:06:13,667 User Login Info = ('n', (False, 'Guille'))
+[INFO] 2018-03-16 17:06:39,269 User Login Info = ('y', (False, 'pqpqpq'))
+[INFO] 2018-03-16 17:08:30,568 Server on port 9797
+[INFO] 2018-03-16 17:08:33,105 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:08:44,398 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 17:11:20,152 Server on port 9797
+[INFO] 2018-03-16 17:11:22,817 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:11:31,835 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 17:11:55,663 Server on port 9797
+[INFO] 2018-03-16 17:11:58,341 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:12:22,983 Server on port 9797
+[INFO] 2018-03-16 17:12:25,725 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:12:34,873 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-16 17:12:45,807 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:12:51,633 User Login Info = ('n', (False, 'Guille'))
+[INFO] 2018-03-16 17:13:14,408 User Login Info = ('y', (True, 'qqq'))
+[INFO] 2018-03-16 17:54:27,534 Server on port 9797
+[INFO] 2018-03-16 17:54:29,287 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:54:42,632 User Login Info = ('y', (True, 'q'))
+[INFO] 2018-03-16 17:54:55,032 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:55:03,053 User Login Info = ('n', (True, 'q'))
+[INFO] 2018-03-16 17:56:18,846 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 17:56:28,538 User Login Info = ('n', (True, 'q'))
+[INFO] 2018-03-16 19:37:20,882 Server on port 9797
+[INFO] 2018-03-16 19:37:22,469 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-16 19:37:37,654 User Login Info = ('y', (True, 'pepe'))
+[INFO] 2018-03-16 19:37:50,431 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:46:19,771 Server on port 9797
+[INFO] 2018-03-19 15:46:30,110 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:46:40,470 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-19 15:46:55,486 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:47:08,549 User Login Info = ('y', (True, 'q'))
+[INFO] 2018-03-19 15:54:01,087 Server on port 9797
+[INFO] 2018-03-19 15:54:02,781 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:54:08,450 User Login Info = ('n', (False, 'd'))
+[INFO] 2018-03-19 15:54:19,109 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-19 15:54:30,725 Server on port 9797
+[INFO] 2018-03-19 15:54:31,808 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:54:41,841 User Login Info = ('n', (True, 'Guille'))
+[INFO] 2018-03-19 15:55:39,892 Server on port 9797
+[INFO] 2018-03-19 15:55:41,772 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:55:54,203 User Login Info = ('n', (True, 'Guille'))
+[INFO] 2018-03-19 15:56:56,098 Server on port 9797
+[INFO] 2018-03-19 15:56:58,297 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:57:08,918 User Login Info = ('y', (True, 'Guille'))
+[INFO] 2018-03-19 15:57:24,965 Server on port 9797
+[INFO] 2018-03-19 15:57:26,562 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2018-03-19 15:57:58,591 User Login Info = ('n', (True, 'Guille'))
