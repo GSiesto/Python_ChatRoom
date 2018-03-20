@@ -382,13 +382,13 @@ def check_command(client_sock, user_name, message):
         print_list_client(client_sock, kick_connections)
     elif msg.startswith("/restart"):
         print "] %s solicit /restart" % user_name
-        print "e restart"
+        clients_exit(client_sock)
     elif msg.startswith("/disconnect"):
         print "] %s solicit /disconnect" % user_name
         client_exit(client_sock)
     elif msg.startswith("/help"):
         print "] %s solicit /help" % user_name
-        client_sock.sendall("You can type:\n /viewusers\n /messageto\n /changepassword\n /busy\n /free\n /changegrant\n /kickuser\n /viewkickusers\n /restart\n /senddata\n /disconnect")
+        client_sock.sendall("You can type:\n /viewusers\n /messageto (username) (message)\n /busy\n /free\n /changegrant (username) (0/1)\n /kickuser (username)\n /viewkickusers\n /restart\n /disconnect")
     else:
         print "] %s solicit couldm't be resolved. Non existing commands" % user_name
         client_sock.sendall("<Server>: [Error typing] Type '/help' see all possible commands")
@@ -400,9 +400,11 @@ def message_to(client_sock, message):
 
     if (index != -1):
         del sublist[0]      # Remove command
+        print "] PM from: " + sublist[0] + "\n] <Message>"
         print ' '.join(sublist)
         active_connections[index][2].sendall("] PM from: " + sublist[0] + "\n] <Message>")
         del sublist[0]      # Remove user_name
+        print ' '.join(sublist) + "\n] <End of message>"
         active_connections[index][2].sendall(' '.join(sublist) + "\n] <End of message>")
     else:
         client_sock.sendall("Error 3 -> User not found")
