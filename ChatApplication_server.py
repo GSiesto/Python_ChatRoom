@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
+"""
+Chat Room for Client Server Architecture.
 
-##
-# University of the West of Scotland
-# Author: Guillermo Siesto Sanchez B00334584
-# e-Mail: b00334684 at studentmail.uws.ac.uk
-# Date: 2018
-# Description: The purpose of this coursework is to develop a distributed chat
-#   system without using any thrid party networking library.
-#
-# ===========
-# S E R V E R
-# ===========
-##
+University of the West of Scotland.
+
+Author: Guillermo Siesto Sanchez B00334584
+e-Mail: b00334684 at studentmail.uws.ac.uk
+Date: 2018
+Description: The purpose of this coursework is to develop a distributed chat
+  system without using any thrid party networking library.
+
+===========
+S E R V E R
+===========
+"""
 
 ##
 # Imports
@@ -23,13 +25,7 @@ from sys import argv, stdout
 import os   # For exiting of every thread
 import re
 import threading        # Threading
-import string
-import random
-from pyftpdlib.authorizers import DummyAuthorizer   # FileTranferProtocol
-from pyftpdlib.handlers import FTPHandler
-from pyftpdlib.servers import FTPServer
-import glob     # For viewing files in a path
-from simplecrypt import encrypt, decrypt # https://github.com/andrewcooke/simple-crypt
+from simplecrypt import encrypt, decrypt    # https://github.com/andrewcooke/simple-crypt
 
 ##
 # Configuration of the log file
@@ -55,17 +51,20 @@ kick_connections = []       # Kicked users. [[username, grant, socket], ...
 lock = threading.RLock()
 
 
-##
-# First iteration between the client and the server.
-# The server will ask for the credentials of the user identifiying if it needs
-# to be registered or logged
-#
-# @param client_sock Raw socket introduced as a parameter
-# @param client_ip_and_port A list of two slots with the ip and the port
-#        of the client
-#
-# @exception if the conecction with the socket is interrupted
 def connect_client(client_sock, client_ip_and_port):
+    """
+
+    First iteration between the client and the server.
+    The server will ask for the credentials of the user identifiying if he
+    needs to be registered or logged.
+
+    @param client_sock Raw socket introduced as a parameter.
+    @param client_ip_and_port A list of two slots with the ip and the port
+            of the client.
+
+    @exception if the conecction with the socket is interrupted.
+
+    """
     client_sock.sendall('Connecting...\n')
     print '] A client [{}] is trying to connect...'.format(client_ip_and_port)
     client_ip = client_ip_and_port[0]
@@ -119,6 +118,9 @@ def connect_client(client_sock, client_ip_and_port):
 # Semi-infinite loop with the soket waiting to comunicate client and server
 def open_connection(client_sock, user_name, direction):
     try:
+        currentDT = datetime.datetime.now()
+        for x in range(len(active_connections)):
+            active_connections[x][2].sendall(currentDT.strftime("<\ %I:%M %p | ") + ' USER:%s has join the room />' %(user_name))
         while (get_socket_index(client_sock) != -1):    # While exists
             message = client_sock.recv(buffer_size)
             msg = message
@@ -144,6 +146,7 @@ def open_connection(client_sock, user_name, direction):
 #           [1][0] return of the method call create_user(client_sock)
 #           [1][1] return of the  method call login_user(client_sock)
 def ask_credentials(client_sock):
+
     try:
         client_sock.sendall('<Server>: Do you want to create a new user? [y/n]')
         response = client_sock.recv(buffer_size)
@@ -414,7 +417,7 @@ def kick_user(client_sock, message):
     sublist = re.split(' ', message)    # It will end as ['/kickuser', 'username', 'whatever', ...]
     index = get_user_index(sublist[1])
     if (index != -1):
-        if (active_connections[get_socket_index(client_sock)][1] == '0'):     # Only if the origin user is a superuser
+        if (active_connections[get_socket_index(client_sock)][1] == 0):     # Only if the origin user is a superuser
             active_connections[index][2].sendall(">kick")
             user_data = [active_connections[index][0], active_connections[index][1], active_connections[index][2]]      # Add to kick list
             kick_connections.append(user_data)
