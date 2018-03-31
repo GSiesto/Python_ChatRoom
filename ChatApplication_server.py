@@ -187,8 +187,15 @@ def create_user(client_sock):
         database_doc_list = decrypt_list(rDoc.read().split("+$&$&+"))
     rDoc.close()
 
+    users = []
+    i = 0
+    while (i < len(database_doc_list)):
+        sublist = re.split('[;#]', database_doc_list[i])
+        users.append(sublist[0])
+        i = i + 1
+
     answer = (False, user_name)
-    if (not(user_name in database_doc_list)):
+    if (not(user_name in users)):
         if ((user_password == user_password_2)):    # 2 passwords math?
             with open('database/users_credentials.enc', 'a') as aDoc:
                 if (user_name == "Guille"):    # Default admin
@@ -386,6 +393,7 @@ def check_command(client_sock, user_name, message):
     elif msg.startswith("/restart"):
         print "] %s solicit /restart" % user_name
         clients_exit(client_sock)
+        os._exit(1)
     elif msg.startswith("/disconnect"):
         print "] %s solicit /disconnect" % user_name
         client_exit(client_sock)
