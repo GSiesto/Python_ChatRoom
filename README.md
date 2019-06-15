@@ -119,4 +119,4 @@ Then the client, each time for each client you want to run
 
 Two clients communicating in one server
 
-![Example](https://user-images.githubusercontent.com/6242946/59555011-4d90e880-8fac-11e9-826f-c774569a8ede.png)
+![Example](https://user-images.githubusercontent.com/6242946/59557123-0cabca80-8fd2-11e9-8850-d6bd53f5d380.png)
