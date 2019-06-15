@@ -2039,3 +2039,6 @@
 [INFO] 2018-03-28 14:30:32,242 User Login Info = ('y', (True, 'Test'))
 [INFO] 2018-03-28 14:31:47,964 Chat Client Connected on IP 127.0.0.1 & Port 9797
 [INFO] 2018-03-28 14:32:15,060 User Login Info = ('n', (True, 'Test'))
+[INFO] 2019-06-15 20:37:25,828 Server on port 9797
+[INFO] 2019-06-15 20:37:32,899 Chat Client Connected on IP 127.0.0.1 & Port 9797
+[INFO] 2019-06-15 20:38:11,659 User Login Info = ('n', (True, 'Guille'))
