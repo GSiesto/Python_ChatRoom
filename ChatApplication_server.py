@@ -556,6 +556,7 @@ def print_list_client(client_sock, list):
 ##
 # Main
 def main(argv):
+
     server_port = 9797
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
