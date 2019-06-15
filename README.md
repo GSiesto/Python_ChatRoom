@@ -52,35 +52,35 @@ The server start **connecting the client**, prepare the socket and check if the 
 
 | **Client functions**         |                                                              |
 | ---------------------------- | ------------------------------------------------------------ |
-| send_message(sock)           | *INPUT: socket with the connection.* *Waiting in a loop checking if a message is input in the command line.* |
-| receive_message(sock)        | *INPUT: socket with the connection.* *Checking in a loop if message is receive though the socket.* |
-| check_command(sock, message) | *INPUT: socket with the connection, Message received.* *The function will check if the message is a command starting by the symbol ‘>’.* |
-| exit()                       | *INPUT: none* *The threads will die, and the application will be closed.* |
+| `send_message(sock)`           | *INPUT: socket with the connection.* *Waiting in a loop checking if a message is input in the command line.* |
+| `receive_message(sock)`        | *INPUT: socket with the connection.* *Checking in a loop if message is receive though the socket.* |
+| `check_command(sock, message)` | *INPUT: socket with the connection, Message received.* *The function will check if the message is a command starting by the symbol ‘>’.* |
+| `exit()`                       | *INPUT: none* *The threads will die, and the application will be closed.* |
 
 ### Server
 
 | **Server functions**                               |                                                              |
 | -------------------------------------------------- | ------------------------------------------------------------ |
-| connect_client(client_sock, client_ip_and_port)    | *INPUT: socket with the connection, IP direction and port where the client is.* *The connection with the socket will be stabilized.* |
-| open_connection(client_sock, user_name, direction) | *INPUT: socket with the connection, name of the user connected, IP direction where the client is.* *The connection will be open.* |
-| ask_credentials(client_sock)                       | *INPUT: socket with the connection.* *A message will appear in the client console asking for a response:* *‘y’: He want to create a new username (register).* *’n’: He has a username and want to login.* **RETURN***:* *(char, Boolean)*  *Char. ‘y’ or ’n’* *The return of the functions*  *Create_user()* *Login_user()* |
-| create_user(client_sock)                           | *INPUT: socket with the connection.* *A user will be created and written in the database. it will be stored with encryption.* **RETURN***:*  *TRUE: If possible to create a user.* *FALSE: If not possible (it is not allowed to have more than one user).* |
-| encrypt_txt(p_text)                                | *INPUT: plain text to encrypt.* *The text will be encrypted*  **RETURN***:*  *Encrypted text* |
-| decrypt_list(p_list):                              | *INPUT: p_list is a list with pain text.* *Every element on the list will be encrypted* **RETURN***:* *A list with all the element encrypted.* |
-| check_password(user_name, password)                | *INPUT: user name, password of the user.* **RETURN***:*  *False: if the information is not the same on the database* *True: if the information is correct.* |
-| login_user(client_sock)                            | *INPUT: socket with the connection.* **RETURN***:*  *False: if the information is not the same on the database* *True: if the information is correct.* |
-| client_exit(client_sock):                          | *INPUT: socket with the connection.* *The socket will be closed.* |
-| clients_exit(client_sock)                          | *INPUT: socket with the connection.* *All the client connected will be disconnected closing the sockets in the process.* |
-| check_message(client_sock, user_name, message)     | *INPUT: socket with the connection. Username, message.* *Check what is being introduced.* |
-| check_command(client_sock, user_name, message)     | *INPUT: socket with the connection.* *Check if the input is a command starts with ‘/‘* |
-| message_to(client_sock, message)                   | *INPUT: socket with the connection. Message inputed in raw.* *A private message will be send to a specific user (it is still in the message parameter)* |
-| kick_user(client_sock, message)                    | *INPUT: socket with the connection.* *A user will be disconnected and added to the kick connection list.* |
-| change_grant(client_sock, user_name, message)      | *INPUT: socket with the connection, username, message in raw with the username to change and grant to put.* *The role of a specific user will be change.* |
-| get_user_grant(user_name)                          | *INPUT: Username.* **RETUN***: Grant of the user (role).*    |
-| set_user_grant(user_name, new_grant)               | *INPUT: username, new role to put.* *This function will set the role of the user to the new introduced as a parameter.* |
-| get_user_index(user_name)                          | *INPUT: socket with the connection.* **RETURN***: the index in the active connection list where the user is stored temporally (RAM).* |
-| get_socket_index(socket)                           | *INPUT: socket with the connection.* **RETURN***: the index in the socket connection list where the user is stored temporally (RAM).* |
-| print_list_client(client_sock, list)               | *INPUT: socket with the connection.* *It will print in the client screen a list of connected users formatted.* |
+| `connect_client(client_sock, client_ip_and_port)`    | *INPUT: socket with the connection, IP direction and port where the client is.* *The connection with the socket will be stabilized.* |
+| `open_connection(client_sock, user_name, direction)` | *INPUT: socket with the connection, name of the user connected, IP direction where the client is.* *The connection will be open.* |
+| `ask_credentials(client_sock)`                       | *INPUT: socket with the connection.* *A message will appear in the client console asking for a response:* *‘y’: He want to create a new username (register).* *’n’: He has a username and want to login.* **RETURN***:* *(char, Boolean)*  *Char. ‘y’ or ’n’* *The return of the functions*  *Create_user()* *Login_user()* |
+| `create_user(client_sock)`                           | *INPUT: socket with the connection.* *A user will be created and written in the database. it will be stored with encryption.* **RETURN***:*  *TRUE: If possible to create a user.* *FALSE: If not possible (it is not allowed to have more than one user).* |
+| `encrypt_txt(p_text)`                                | *INPUT: plain text to encrypt.* *The text will be encrypted*  **RETURN***:*  *Encrypted text* |
+| `decrypt_list(p_list)`:                              | *INPUT: p_list is a list with pain text.* *Every element on the list will be encrypted* **RETURN***:* *A list with all the element encrypted.* |
+| `check_password(user_name, password)`                | *INPUT: user name, password of the user.* **RETURN***:*  *False: if the information is not the same on the database* *True: if the information is correct.* |
+| `login_user(client_sock)`                            | *INPUT: socket with the connection.* **RETURN***:*  *False: if the information is not the same on the database* *True: if the information is correct.* |
+| `client_exit(client_sock)`:                          | *INPUT: socket with the connection.* *The socket will be closed.* |
+| `clients_exit(client_sock)`                          | *INPUT: socket with the connection.* *All the client connected will be disconnected closing the sockets in the process.* |
+| `check_message(client_sock, user_name, message)`     | *INPUT: socket with the connection. Username, message.* *Check what is being introduced.* |
+| `check_command(client_sock, user_name, message)`     | *INPUT: socket with the connection.* *Check if the input is a command starts with ‘/‘* |
+| `message_to(client_sock, message)`                   | *INPUT: socket with the connection. Message inputed in raw.* *A private message will be send to a specific user (it is still in the message parameter)* |
+| `kick_user(client_sock, message)`                    | *INPUT: socket with the connection.* *A user will be disconnected and added to the kick connection list.* |
+| `change_grant(client_sock, user_name, message)`      | *INPUT: socket with the connection, username, message in raw with the username to change and grant to put.* *The role of a specific user will be change.* |
+| `get_user_grant(user_name)`                          | *INPUT: Username.* **RETUN***: Grant of the user (role).*    |
+| `set_user_grant(user_name, new_grant)`               | *INPUT: username, new role to put.* *This function will set the role of the user to the new introduced as a parameter.* |
+| `get_user_index(user_name)`                          | *INPUT: socket with the connection.* **RETURN***: the index in the active connection list where the user is stored temporally (RAM).* |
+| `get_socket_index(socket)`                           | *INPUT: socket with the connection.* **RETURN***: the index in the socket connection list where the user is stored temporally (RAM).* |
+| `print_list_client(client_sock, list)`               | *INPUT: socket with the connection.* *It will print in the client screen a list of connected users formatted.* |
 
 ### External Libraries
 
