@@ -20,6 +20,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from sys import argv, stdout
 import os           # For exiting of every thread
 import threading    # Threading
+from ftplib import FTP
 
 ##
 # Config
@@ -33,15 +34,18 @@ free = True
 grant = 1               # 0 = Superuser ; 1 = Normaluser
 connected = False       # For wxiting the thread
 buffer_size = 12800
+server_ip = "localhost"
+server_port = 9797
 
 ##
 # Lock
 lock = threading.RLock()
 
 
+
 ##
 # Send a general message to the common room
-def send_message(sock, server_ip):
+def send_message(sock):
     global connected
     try:
         while connected:
@@ -58,7 +62,7 @@ def send_message(sock, server_ip):
 
 ##
 # Receive a message thought the socket and process it
-def receive_message(sock, server_ip):
+def receive_message(sock):
     global connected
     try:
         while connected:
@@ -70,8 +74,9 @@ def receive_message(sock, server_ip):
             else:
                 if (free):
                     print message
+            stdout.flush()
         print "\Receiving finished"
-        stdout.flush()
+
     except ():
         print "] Forced exit when receiving message"
         connected = False
@@ -129,6 +134,8 @@ def exit():
 # Main
 def main(argv):
     try:
+        global server_ip
+        global server_port
         server_ip = argv[1]
         server_port = int(argv[2])
 
@@ -142,12 +149,12 @@ def main(argv):
 
         # ============== 2 Active Threads
         # Thread for Sendind
-        sending_t = threading.Thread(target=send_message, args=(sock, server_ip))
+        sending_t = threading.Thread(target=send_message, args=(sock,))
         # sending_t.daemon = True
         sending_t.start()
 
         # Thread for Receiving
-        receiving_t = threading.Thread(target=receive_message, args=(sock, server_ip))
+        receiving_t = threading.Thread(target=receive_message, args=(sock,))
         # receiving_t.daemon = True
         receiving_t.start()
 
