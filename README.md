@@ -8,8 +8,6 @@ Author: Guillermo Siesto Sánchez
 University of the West of Scotland
 Paisley, Scotland. 2018*
 
-[TOC]
-
 ## Project description
 
 The structure of the project is divided in **two main python programs**, one for the *server* and other for the *client* or clients (each client will execute the client). In addicHon it has been added a log for beWer understanding of system failures, and a database with an encrypted file for the record of the users and password that use the system. 
