@@ -90,6 +90,8 @@ Library of cryptography (External): *(c) 2012-2015 Andrew Cooke,* [*andrew@acook
 
 ### Running the program
 
+**This project was designed for ```Python 2```, be sure to use this version before running it.**
+
 Firstly, the server
 
 ```python ChatApplication_server.py```
